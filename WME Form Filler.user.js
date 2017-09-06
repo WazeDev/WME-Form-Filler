@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.3.6b1
+// @version     1.3.6b2
 // @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @author      crazycaveman
 // @license     MIT
@@ -189,7 +189,7 @@ function abbrState(input, to)
     ];
 
     if (to == 'abbr'){
-        input = input.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        input = input.replace(/\w+/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         for(i = 0; i < states.length; i++){
             if(states[i][0] == input){
                 return(states[i][1]);
@@ -244,6 +244,9 @@ function ff_getState(sel)
         {
             sID = Waze.model.cities.get(cID).attributes.countryID;
             newState = Waze.model.countries.get(sID).name;
+            formfiller_log('cID: '+cID);
+            formfiller_log('sID: '+sID);
+            formfiller_log('newState: '+newState);
         }
         
         if (stateName === "")
