@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.3.6
+// @version     1.3.6.1b1
 // @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @author      crazycaveman
 // @license     MIT
@@ -523,8 +523,8 @@ function ff_addFormBtn()
     forms = [
     {
         //https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'USA VEOC Irma Weather related closures',
-        url: 'https://docs.google.com/forms/d/e/1FAIpQLSduFs5gPUtGZo0fJX5wsJzZY7cjvdMksXgJPXAOVc0Z_nSRbQ/viewform',
+        name: 'USA VEOC Maria Weather related closures',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform',
         username: '1553765347',
         status: '1264424583',
         permalink: '1811077109',
@@ -541,8 +541,8 @@ function ff_addFormBtn()
     },
     {
         //https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'USA VEOC Harvey Weather related closures',
-        url: 'https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform',
+        name: 'USA VEOC Irma Weather related closures',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSduFs5gPUtGZo0fJX5wsJzZY7cjvdMksXgJPXAOVc0Z_nSRbQ/viewform',
         username: '1553765347',
         status: '1264424583',
         permalink: '1811077109',
@@ -557,6 +557,7 @@ function ff_addFormBtn()
         source: '1803937317',
         notes: '1648634142',
     },
+    
     {
         //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
         name: 'Illinois event/weather closures',
