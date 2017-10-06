@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.3.6.1b1
+// @version     1.3.6.1
 // @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @author      crazycaveman
 // @license     MIT
@@ -523,26 +523,8 @@ function ff_addFormBtn()
     forms = [
     {
         //https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'USA VEOC Maria Weather related closures',
+        name: 'USA VEOC Nate Weather related closures',
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform',
-        username: '1553765347',
-        status: '1264424583',
-        permalink: '1811077109',
-        direction: '792657790',
-        reason: '345142186',
-        endDate: '1102521735',
-        streetname: '2015424420',
-        fromStreet: '1547375393',
-        toStreet: '1335391716',
-        state: '1867193205',
-        county: '1714138473',
-        source: '1803937317',
-        notes: '1648634142',
-    },
-    {
-        //https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'USA VEOC Irma Weather related closures',
-        url: 'https://docs.google.com/forms/d/e/1FAIpQLSduFs5gPUtGZo0fJX5wsJzZY7cjvdMksXgJPXAOVc0Z_nSRbQ/viewform',
         username: '1553765347',
         status: '1264424583',
         permalink: '1811077109',
