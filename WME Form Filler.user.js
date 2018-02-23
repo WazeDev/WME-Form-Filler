@@ -2,8 +2,8 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.3.6.1
-// @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
+// @version     1.3.7
+// @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor.*$/
 // @author      crazycaveman
 // @license     MIT
 // @run-at      document-end
@@ -49,7 +49,7 @@ function formfiller_bootstrap()
         } )();
     }*/
 
-    if (typeof Waze.app === 'undefined' || !window.Waze.map)
+    if (typeof W.app === 'undefined' || !window.W.map)
     {
         setTimeout(formfiller_bootstrap,500);
         return;
@@ -116,9 +116,9 @@ function formfiller_init()
         });
     });
     formFillerObserver.observe(document.getElementById("edit-panel"), { childList: true, subtree: true });
-    //Waze.selectionManager.events.register("selectionchanged", null, ff_addFormBtn);
-    if (Waze.app.modeController) {
-        Waze.app.modeController.model.bind('change:mode', function(model, modeId) {
+    //W.selectionManager.events.register("selectionchanged", null, ff_addFormBtn);
+    if (W.app.modeController) {
+        W.app.modeController.model.bind('change:mode', function(model, modeId) {
             if (modeId == 0) {
                 ff_addUserTab();
             }
@@ -219,7 +219,7 @@ function ff_getStreetName(sel)
 
     for (i=0; i<sel.length; i++)
     {
-        var newStreet = Waze.model.streets.get(sel[i].model.attributes.primaryStreetID);
+        var newStreet = W.model.streets.get(sel[i].model.attributes.primaryStreetID);
         if (typeof newStreet === "undefined" || newStreet.name === null)
             newStreet = "No Name";
         if (streetName === "")
@@ -236,14 +236,14 @@ function ff_getState(sel)
 
     for (i=0; i<sel.length; i++)
     {
-        var cID = Waze.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
-        var sID = Waze.model.cities.get(cID).attributes.stateID;
-        var newState = Waze.model.states.get(sID).name;
+        var cID = W.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
+        var sID = W.model.cities.get(cID).attributes.stateID;
+        var newState = W.model.states.get(sID).name;
         
         if (newState === "")
         {
-            sID = Waze.model.cities.get(cID).attributes.countryID;
-            newState = Waze.model.countries.get(sID).name;
+            sID = W.model.cities.get(cID).attributes.countryID;
+            newState = W.model.countries.get(sID).name;
             formfiller_log('cID: '+cID);
             formfiller_log('sID: '+sID);
             formfiller_log('newState: '+newState);
@@ -265,8 +265,8 @@ function ff_getCity(sel)
     var cityName = "";
     for (i=0; i<sel.length; i++)
     {
-        var cID = Waze.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
-        var newCity = Waze.model.cities.get(cID).attributes.name;
+        var cID = W.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
+        var newCity = W.model.cities.get(cID).attributes.name;
         if (cityName === "")
             cityName = newCity;
         else if (cityName != newCity)
@@ -281,7 +281,7 @@ function ff_getCity(sel)
 function ff_getCounty(sel)
 {
     var county = "";
-    var center = Waze.map.center.clone().transform(Waze.map.projection.projCode,Waze.map.displayProjection.projCode);
+    var center = W.map.center.clone().transform(W.map.projection.projCode,W.map.displayProjection.projCode);
     //formfiller_log("Getting county for "+center.lat.toString()+","+center.lon.toString());
     var xhr = new XMLHttpRequest();
     xhr.open("GET",'https://maps.googleapis.com/maps/api/geocode/json?latlng='+center.lat+','+center.lon,false);
@@ -337,7 +337,7 @@ function ff_closureActive(sel)
     for (i=0; i<sel.length; i++)
     {
         if (sel[i].model.hasClosures())
-            if (Waze.model.roadClosures.getByAttributes({segID: sel[i].model.attributes.id})[0].active)
+            if (W.model.roadClosures.getByAttributes({segID: sel[i].model.attributes.id})[0].active)
                 return true;
     }
     return false;
@@ -353,7 +353,7 @@ function ff_getClosureInfo(seg)
         reason: ""
     };
     var segID = seg.model.attributes.id;
-    var closureList = Waze.model.roadClosures.getByAttributes({segID: segID,active: true});
+    var closureList = W.model.roadClosures.getByAttributes({segID: segID,active: true});
     /*if (closureList.length > 2)
         return closureList;
     if (closureList.length == 2 && closureList[0].forward != closureList[1].forward)
@@ -401,11 +401,11 @@ function ff_createPermalink(selection)
     //https://www.waze.com/editor/?env=usa&lon=-79.79248&lat=32.86150&layers=12709&zoom=5&mode=0&mapProblemFilter=1&mapUpdateRequestFilter=0&venueFilter=0&segments=504534141
     //https://www.waze.com/editor/?env=usa&lon=-79.79248&lat=32.86150&layers=12709&zoom=5&mode=0&mapProblemFilter=1&mapUpdateRequestFilter=0&venueFilter=0&venues=183632201.1836387542.3102948
     var permalink = "https://www.waze.com/editor/?", segIDs = [];
-    var latLon = Waze.map.center.clone().transform(Waze.map.projection.projCode,Waze.map.displayProjection.projCode);
+    var latLon = W.map.center.clone().transform(W.map.projection.projCode,W.map.displayProjection.projCode);
     var lat = latLon.lat, lon = latLon.lon;
-    var env = Waze.location.code;
+    var env = W.location.code;
     var type = "segments";
-    var zoom = Waze.map.zoom;
+    var zoom = W.map.zoom;
 
     /*if (zoom == 3)
         alert('Current zoom level (3) will not select street segments! If your selection includes street segments, please increase the zoom level');
@@ -421,13 +421,13 @@ function ff_createPermalink(selection)
     if (selection.length == 1)
     {
         latLon = selection[0].model.getCenter().clone();
-        latLon.transform(Waze.map.projection.projCode,Waze.map.displayProjection.projCode);
+        latLon.transform(W.map.projection.projCode,W.map.displayProjection.projCode);
         lat = latLon.y;
         lon = latLon.x;
     }
 
     var maxzoom = 2,
-        zoomToRoadType = Waze.Config.segments.zoomToRoadType;
+        zoomToRoadType = W.Config.segments.zoomToRoadType;
     for (i=0; i<selection.length; i++)
     {
         var segment = selection[i].model;
@@ -448,7 +448,7 @@ function ff_createPermalink(selection)
 
 function ff_createFormLink(formIndx)
 {
-    var selection = Waze.selectionManager.selectedItems;
+    var selection = W.selectionManager.selectedItems;
     var formInfo = {};
     var formDt = forms[formIndx];
     var formLink = formDt.url;
@@ -458,7 +458,7 @@ function ff_createFormLink(formIndx)
         return;
     }
 
-    formInfo.username = encodeURIComponent(Waze.loginManager.user.userName);
+    formInfo.username = encodeURIComponent(W.loginManager.user.userName);
     formInfo.streetname = encodeURIComponent(ff_getStreetName(selection));
     formInfo.permalink = encodeURIComponent(ff_createPermalink(selection));
     if (formInfo.permalink === "undefined")
@@ -508,7 +508,7 @@ function ff_createFormLink(formIndx)
 
 function ff_addFormBtn()
 {
-    var selection = Waze.selectionManager.selectedItems;
+    var selection = W.selectionManager.selectedItems;
     if (selection.length === 0 || selection[0].model.type != "segment")
     {
         //formfiller_log("No segments selected.");
