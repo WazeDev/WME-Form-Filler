@@ -522,8 +522,8 @@ function ff_addFormBtn()
 
     forms = [
     {
-        //https://docs.google.com/forms/d/1QUIfaR2FKRLU8TTlJq1KVJ595nkeDGS9_riSuBVMDDI/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'USA VEOC Nate Weather related closures',
+        //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+        name: 'USA VEOC closures',
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform',
         username: '1553765347',
         status: '1264424583',
@@ -559,24 +559,25 @@ function ff_addFormBtn()
         source: '172235277',
         notes: '1722909714',
     },
-    /*{
-        //https://docs.google.com/forms/d/e/1FAIpQLSeRVbj9DNsbP4GOeYr_6_2KjgS2TGi3f_Z5d9FVX1MmqMrZDQ/viewform?entry.1553765347=username&entry.1264424583=REPORTED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-12+19:15&entry.2015424420=streetname&entry.1547375393=closure_from&entry.1335391716=closure_to&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: 'Testing form weather closures',
-        url: 'https://docs.google.com/forms/d/e/1FAIpQLSeRVbj9DNsbP4GOeYr_6_2KjgS2TGi3f_Z5d9FVX1MmqMrZDQ/viewform',
-        username: '1553765347',
-        status: '1264424583',
-        permalink: '1811077109',
-        direction: '792657790',
-        reason: '345142186',
-        endDate: '1102521735',
-        streetname: '2015424420',
-        fromStreet: '1547375393',
-        toStreet: '1335391716',
-        state: '1867193205',
-        county: '1714138473',
-        source: '1803937317',
-        notes: '1648634142',
-    },*/
+    {
+        //https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform?entry.1204781462=ojlaw&entry.828228572=CLOSED&entry.1647952662=Test1&entry.1501712688=Test2&entry.2094306654=Test3&entry.1414240321=One-Way&entry.900957975=00/00/0000+00:00&entry.1051351191=Adams&entry.1093044522=Test4&entry.1540676081=City&entry.430378754=Test5&entry.1754051160=Test6&entry.172235277=Test7&entry.1722909714=Test8
+        name: 'Wisconsin event/weather closures',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform',
+        username: '1204781462',
+        status: '828228572',
+        permalink: '1754051160',
+        direction: '1414240321',
+        reason: '430378754',
+        endDate: '900957975',
+        streetname: '1647952662',
+        fromStreet: '1501712688',
+        toStreet: '2094306654',
+        //state: '0',
+        county: '1051351191',
+        city: '1093044522',
+        source: '172235277',
+        notes: '1722909714',
+    },
     /*{
         //https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
         name: 'USA Weather related closures',
