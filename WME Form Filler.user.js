@@ -3,6 +3,8 @@
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
 // @version     1.3.7
+// @homepage    https://github.com/WazeDev/WME-Form-Filler
+// @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor.*$/
 // @author      crazycaveman
 // @license     MIT
@@ -27,27 +29,6 @@ var forms = {};
 function formfiller_bootstrap()
 {
     formfiller_log("Running bootstrap");
-    /*var bGreasemonkeyServiceDefined = false;
-    try
-    {
-        if ("object" === typeof Components.interfaces.gmIGreasemonkeyService)
-        {
-            bGreasemonkeyServiceDefined = true;
-        }
-    }
-    catch (err)
-    {
-        //Ignore
-    }
-    if ("undefined" === typeof unsafeWindow || ! bGreasemonkeyServiceDefined)
-    {
-        unsafeWindow = ( function ()
-        {
-            var dummyElem = document.createElement('p');
-            dummyElem.setAttribute('onClick','return window;');
-            return dummyElem.onclick ();
-        } )();
-    }*/
 
     if (typeof W.app === 'undefined' || !window.W.map)
     {
@@ -132,64 +113,64 @@ function formfiller_init()
 function abbrState(input, to)
 {
     var states = [
-        ['Arizona', 'AZ'],
-        ['Alabama', 'AL'],
-        ['Alaska', 'AK'],
-        ['Arizona', 'AZ'],
-        ['Arkansas', 'AR'],
-        ['California', 'CA'],
-        ['Colorado', 'CO'],
-        ['Connecticut', 'CT'],
-        ['Delaware', 'DE'],
-        ['Florida', 'FL'],
-        ['Georgia', 'GA'],
-        ['Hawaii', 'HI'],
-        ['Idaho', 'ID'],
-        ['Illinois', 'IL'],
-        ['Indiana', 'IN'],
-        ['Iowa', 'IA'],
-        ['Kansas', 'KS'],
-        ['Kentucky', 'KY'],
-        ['Kentucky', 'KY'],
-        ['Louisiana', 'LA'],
-        ['Maine', 'ME'],
-        ['Maryland', 'MD'],
-        ['Massachusetts', 'MA'],
-        ['Michigan', 'MI'],
-        ['Minnesota', 'MN'],
-        ['Mississippi', 'MS'],
-        ['Missouri', 'MO'],
-        ['Montana', 'MT'],
-        ['Nebraska', 'NE'],
-        ['Nevada', 'NV'],
-        ['New Hampshire', 'NH'],
-        ['New Jersey', 'NJ'],
-        ['New Mexico', 'NM'],
-        ['New York', 'NY'],
-        ['North Carolina', 'NC'],
-        ['North Dakota', 'ND'],
-        ['Ohio', 'OH'],
-        ['Oklahoma', 'OK'],
-        ['Oregon', 'OR'],
-        ['Pennsylvania', 'PA'],
-        ['Rhode Island', 'RI'],
-        ['South Carolina', 'SC'],
-        ['South Dakota', 'SD'],
-        ['Tennessee', 'TN'],
-        ['Texas', 'TX'],
-        ['Utah', 'UT'],
-        ['Vermont', 'VT'],
-        ['Virginia', 'VA'],
-        ['Washington', 'WA'],
-        ['West Virginia', 'WV'],
-        ['Wisconsin', 'WI'],
-        ['Wyoming', 'WY'],
-        ['Puerto Rico', 'PR'],
-        ['Virgin Islands (U.S.)', 'VI']
+        ['ARIZONA', 'AZ'],
+        ['ALABAMA', 'AL'],
+        ['ALASKA', 'AK'],
+        ['ARIZONA', 'AZ'],
+        ['ARKANSAS', 'AR'],
+        ['CALIFORNIA', 'CA'],
+        ['COLORADO', 'CO'],
+        ['CONNECTICUT', 'CT'],
+        ['DELAWARE', 'DE'],
+        ['FLORIDA', 'FL'],
+        ['GEORGIA', 'GA'],
+        ['HAWAII', 'HI'],
+        ['IDAHO', 'ID'],
+        ['ILLINOIS', 'IL'],
+        ['INDIANA', 'IN'],
+        ['IOWA', 'IA'],
+        ['KANSAS', 'KS'],
+        ['KENTUCKY', 'KY'],
+        ['KENTUCKY', 'KY'],
+        ['LOUISIANA', 'LA'],
+        ['MAINE', 'ME'],
+        ['MARYLAND', 'MD'],
+        ['MASSACHUSETTS', 'MA'],
+        ['MICHIGAN', 'MI'],
+        ['MINNESOTA', 'MN'],
+        ['MISSISSIPPI', 'MS'],
+        ['MISSOURI', 'MO'],
+        ['MONTANA', 'MT'],
+        ['NEBRASKA', 'NE'],
+        ['NEVADA', 'NV'],
+        ['NEW HAMPSHIRE', 'NH'],
+        ['NEW JERSEY', 'NJ'],
+        ['NEW MEXICO', 'NM'],
+        ['NEW YORK', 'NY'],
+        ['NORTH CAROLINA', 'NC'],
+        ['NORTH DAKOTA', 'ND'],
+        ['OHIO', 'OH'],
+        ['OKLAHOMA', 'OK'],
+        ['OREGON', 'OR'],
+        ['PENNSYLVANIA', 'PA'],
+        ['RHODE ISLAND', 'RI'],
+        ['SOUTH CAROLINA', 'SC'],
+        ['SOUTH DAKOTA', 'SD'],
+        ['TENNESSEE', 'TN'],
+        ['TEXAS', 'TX'],
+        ['UTAH', 'UT'],
+        ['VERMONT', 'VT'],
+        ['VIRGINIA', 'VA'],
+        ['WASHINGTON', 'WA'],
+        ['WEST VIRGINIA', 'WV'],
+        ['WISCONSIN', 'WI'],
+        ['WYOMING', 'WY'],
+        ['PUERTO RICO', 'PR'],
+        ['VIRGIN ISLANDS (U.S.)', 'VI']
     ];
 
     if (to == 'abbr'){
-        input = input.replace(/\w+/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        input = input.toUpperCase();
         for(i = 0; i < states.length; i++){
             if(states[i][0] == input){
                 return(states[i][1]);
@@ -402,20 +383,11 @@ function ff_createPermalink(selection)
     //https://www.waze.com/editor/?env=usa&lon=-79.79248&lat=32.86150&layers=12709&zoom=5&mode=0&mapProblemFilter=1&mapUpdateRequestFilter=0&venueFilter=0&venues=183632201.1836387542.3102948
     var permalink = "https://www.waze.com/editor/?", segIDs = [];
     var latLon = W.map.center.clone().transform(W.map.projection.projCode,W.map.displayProjection.projCode);
-    var lat = latLon.lat, lon = latLon.lon;
+    var lat = latLon.lat,
+        lon = latLon.lon;
     var env = W.location.code;
     var type = "segments";
     var zoom = W.map.zoom;
-
-    /*if (zoom == 3)
-        alert('Current zoom level (3) will not select street segments! If your selection includes street segments, please increase the zoom level');
-    else if (zoom == 2)
-        alert ('Current zoom level (2) will only select PS+ segments! If you have any other segment type selected, please increase the zoom level');
-    else if (zoom <= 1)
-    {
-        alert ('Current zoom level ('+ zoom.toString() +') will not select any segments! Increase the zoom level before submitting!');
-        return;
-    }*/
 
     //To get lat and long centered on segment
     if (selection.length == 1)
@@ -426,8 +398,7 @@ function ff_createPermalink(selection)
         lon = latLon.x;
     }
 
-    var maxzoom = 2,
-        zoomToRoadType = W.Config.segments.zoomToRoadType;
+    var zoomToRoadType = W.Config.segments.zoomToRoadType;
     for (i=0; i<selection.length; i++)
     {
         var segment = selection[i].model;
@@ -468,10 +439,6 @@ function ff_createFormLink(formIndx)
     }
     formInfo.county = ff_getCounty(selection);
 
-    formInfo.status = "REPORTED";
-    formInfo.direction = "Two-Way";
-    formInfo.reason = document.getElementById("ff-closure-reason").value;
-    formInfo.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
     if (ff_closureActive(selection))
     {
         formInfo.status = "CLOSED";
@@ -479,6 +446,11 @@ function ff_createFormLink(formIndx)
         formInfo.direction = closureInfo.direction;
         formInfo.reason = encodeURIComponent(closureInfo.reason);
         formInfo.endDate = encodeURIComponent(closureInfo.endDate);
+    } else {
+        formInfo.status = "REPORTED";
+        formInfo.direction = "Two-Way";
+        formInfo.reason = document.getElementById("ff-closure-reason").value;
+        formInfo.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
     }
     formInfo.notes = "Form+filled+by+"+WMEFFName+"+v"+WMEFFVersion;
 
@@ -664,10 +636,6 @@ function ff_loadSettings()
 
 function ff_saveSettings()
 {
-    /*formfiller_log("Saving settings:\n"+$("#ff-open-in-tab").prop("checked")+
-        "\n"+$("#ff-closure-reason").val()+
-        "\n"+$("#ff-closure-endDate").val()+
-        "\n"+$("#ff-closure-endTime").val());*/
     if ($("#ff-open-in-tab").prop("checked"))
         localStorage.setItem("ff-open-in-tab", "1");
     else
