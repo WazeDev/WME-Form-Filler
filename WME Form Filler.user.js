@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.0b3
+// @version     1.4.0b4
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -432,11 +432,11 @@ function ff_getLastEditor(selection)
            eID = selected.model.attributes.createdBy;
        }
        newEdName = W.model.users.get(eID).userName;
-       if (editorNames.indexOf(newEdName) === -1) 
+       if (editorNames.indexOf(newEdName) === -1)
        {
            editorNames += ", " + newEdName;
        }
-           
+
     });
     editorNames = editorNames.substr(2);
     return editorNames;
@@ -448,6 +448,7 @@ function ff_createFormLink(formSel)
     var formValues = {};
     var formFields = formSel.fields;
     var formLink = formSel.url + "?entry.";
+    var formArgs = [];
     if (selection.length === 0 || selection[0].model.type != "segment")
     {
         formfiller_log("No segments selected.");
@@ -470,7 +471,7 @@ function ff_createFormLink(formSel)
         source
         notes
     */
-    var formArgs = [];
+
     Object.keys(formFields).forEach(function(key,index) {
         switch (key) {
             case "username":
@@ -487,7 +488,7 @@ function ff_createFormLink(formSel)
             case "streetname":
                 formValues[key] = ff_getStreetName(selection);
                 break;
-            case "editor":
+            case "editorName":
                 formValues[key] = ff_getLastEditor(selection);
                 break;
             case "stateabbr":
@@ -506,24 +507,29 @@ function ff_createFormLink(formSel)
                 formValues[key] = "Form filled by "+WMEFFName+" v"+WMEFFVersion;
                 break;
             case "closureStatus":
-                if (ff_closureActive(selection))
+                if (selection[0].model.type === "segment")
                 {
-                    formValues.closureStatus = "CLOSED";
-                    var closureInfo = ff_getClosureInfo(selection[0]);
-                    formValues.closedDir = closureInfo.closedDir;
-                    formValues.closedReason = closureInfo.closedReason;
-                    formValues.endDate = closureInfo.endDate;
-                } else {
-                    formValues.closureStatus = "REPORTED";
-                    formValues.closedDir = "Two-Way";
-                    formValues.closedReason = document.getElementById("ff-closure-reason").value;
-                    formValues.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
+                    if (ff_closureActive(selection))
+                    {
+                        formValues.closureStatus = "CLOSED";
+                        var closureInfo = ff_getClosureInfo(selection[0]);
+                        formValues.closedDir = closureInfo.closedDir;
+                        formValues.closedReason = closureInfo.closedReason;
+                        formValues.endDate = closureInfo.endDate;
+                    } else {
+                        formValues.closureStatus = "REPORTED";
+                        formValues.closedDir = "Two-Way";
+                        formValues.closedReason = document.getElementById("ff-closure-reason").value;
+                        formValues.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
+                    }
                 }
                 break;
             default:
                 formfiller_log("Nothing defined for "+ key);
                 break;
         }
+
+        //Add entry to form URL, if there's something to add
         if (typeof formValues[key] !== "undefined" && formValues[key] !== "")
         {
             formArgs[index] = formFields[key] +"="+ encodeURIComponent(formValues[key]);
@@ -663,7 +669,7 @@ function ff_addFormBtn()
     {
         //alert(ffMnu.options[ffMnu.selectedIndex].value+": "+forms[ffMnu.options[ffMnu.selectedIndex].value].name);
         ff_saveSettings();
-        formLink = ff_createFormLink(ffMnu.options[ffMnu.selectedIndex].value);
+        formLink = ff_createFormLink(forms[ffMnu.options[ffMnu.selectedIndex].value]);
         if (typeof formLink === "undefined")
             return;
 
