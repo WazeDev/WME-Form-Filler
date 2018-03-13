@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.0b2
+// @version     1.4.0b3
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -432,10 +432,14 @@ function ff_getLastEditor(selection)
            eID = selected.model.attributes.createdBy;
        }
        newEdName = W.model.users.get(eID).userName;
-       (editorNames.indexOf(newEdName) === -1 && editorNames += ", " + newEdName);
+       if (editorNames.indexOf(newEdName) === -1) 
+       {
+           editorNames += ", " + newEdName;
+       }
+           
     });
     editorNames = editorNames.substr(2);
-    return editorNames
+    return editorNames;
 }
 
 function ff_createFormLink(formSel)
@@ -516,7 +520,7 @@ function ff_createFormLink(formSel)
                     formValues.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
                 }
                 break;
-            case default:
+            default:
                 formfiller_log("Nothing defined for "+ key);
                 break;
         }
