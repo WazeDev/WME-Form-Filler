@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.3.8
+// @version     1.4.0b1
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -197,13 +197,13 @@ function formfiller_log(message)
         console.log("FormFiller: ", message);
 }
 
-function ff_getStreetName(sel)
+function ff_getStreetName(selection)
 {
     var streetName = "", i;
 
-    for (i=0; i<sel.length; i+=1)
+    for (i=0; i<selection.length; i+=1)
     {
-        var newStreet = W.model.streets.get(sel[i].model.attributes.primaryStreetID);
+        var newStreet = W.model.streets.get(selection[i].model.attributes.primaryStreetID);
         if (typeof newStreet === "undefined" || newStreet.name === null)
             newStreet = "No Name";
         if (streetName === "")
@@ -214,13 +214,13 @@ function ff_getStreetName(sel)
     return streetName;
 }
 
-function ff_getState(sel)
+function ff_getState(selection)
 {
     var stateName = "", i;
 
-    for (i=0; i<sel.length; i+=1)
+    for (i=0; i<selection.length; i+=1)
     {
-        var cID = W.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
+        var cID = W.model.streets.get(selection[i].model.attributes.primaryStreetID).cityID;
         var sID = W.model.cities.get(cID).attributes.stateID;
         var newState = W.model.states.get(sID).name;
 
@@ -244,12 +244,12 @@ function ff_getState(sel)
     return stateName;
 }
 
-function ff_getCity(sel)
+function ff_getCity(selection)
 {
     var cityName = "", i;
-    for (i=0; i<sel.length; i+=1)
+    for (i=0; i<selection.length; i+=1)
     {
-        var cID = W.model.streets.get(sel[i].model.attributes.primaryStreetID).cityID;
+        var cID = W.model.streets.get(selection[i].model.attributes.primaryStreetID).cityID;
         var newCity = W.model.cities.get(cID).attributes.name;
         if (cityName === "")
             cityName = newCity;
@@ -262,7 +262,7 @@ function ff_getCity(sel)
     return cityName;
 }
 
-function ff_getCounty(sel)
+function ff_getCounty(selection)
 {
     var county = "";
     var center = W.map.center.clone().transform(W.map.projection.projCode,W.map.displayProjection.projCode);
@@ -317,13 +317,13 @@ function ff_getCounty(sel)
     });*/
 }
 
-function ff_closureActive(sel)
+function ff_closureActive(selection)
 {
     var i;
-    for (i=0; i<sel.length; i+=1)
+    for (i=0; i<selection.length; i+=1)
     {
-        if (sel[i].model.hasClosures())
-            if (W.model.roadClosures.getByAttributes({segID: sel[i].model.attributes.id})[0].active)
+        if (selection[i].model.hasClosures())
+            if (W.model.roadClosures.getByAttributes({segID: selection[i].model.attributes.id})[0].active)
                 return true;
     }
     return false;
@@ -332,11 +332,11 @@ function ff_closureActive(sel)
 function ff_getClosureInfo(seg)
 {
     var closureInfo = {
-        direction: "",
+        closedDir: "",
         endDate: "",
         idFwd: "",
         idRev: "",
-        reason: ""
+        closedReason: ""
     };
     var segID = seg.model.attributes.id;
     var closureList = W.model.roadClosures.getByAttributes({segID: segID,active: true});
@@ -362,17 +362,17 @@ function ff_getClosureInfo(seg)
             {
                 closureInfo.idRev = closureList[i].id;
             }
-            if (closureInfo.reason === "")
+            if (closureInfo.closedReason === "")
             {
-                closureInfo.reason = closureList[i].reason;
+                closureInfo.closedReason = closureList[i].closedReason;
             }
         }
     }
 
     if (closureInfo.idFwd !== "" && closureInfo.idRev !== "")
-        closureInfo.direction = "Two-Way";
+        closureInfo.closedDir = "Two-Way";
     else
-        closureInfo.direction = "One-Way";
+        closureInfo.closedDir = "One-Way";
 
     return closureInfo;
 }
@@ -418,98 +418,115 @@ function ff_createPermalink(selection)
     return permalink;
 }
 
-function ff_createFormLink(formIndx)
+function ff_getLastEditor(selection)
+{
+    var eID;
+    var editorNames = "";
+    var newEdName = "";
+    //selection[0].model.attributes.updatedBy;
+    selection.forEach(function(selected) {
+       eID = selected.model.attributes.updatedBy;
+       if (typeof eID !== "undefined")
+       {
+           formfiller_log("Unable to get updatedBy on "+ selected.model.attributes.id);
+           eID = selected.model.attributes.createdBy;
+       }
+       newEdName = W.model.users.get(eID).userName;
+       (editorNames.indexOf(newEdName) === -1 ? editorNames += ", " + newEdName);
+    });
+    editorNames = editorNames.substr(2);
+    return editorNames
+}
+
+function ff_createFormLink(formSel)
 {
     var selection = W.selectionManager.selectedItems;
-    var formInfo = {};
-    var formDt = forms[formIndx];
-    var formLink = formDt.url;
+    var formValues = {};
+    var formFields = formSel.fields;
+    var formLink = formSel.url + "?entry.";
     if (selection.length === 0 || selection[0].model.type != "segment")
     {
         formfiller_log("No segments selected.");
         return;
     }
 
-    formInfo.username = W.loginManager.user.userName;
-    formInfo.streetname = ff_getStreetName(selection);
-    formInfo.permalink = ff_createPermalink(selection);
-    if (formInfo.permalink === "undefined")
-    {
-        formfiller_log("No permalink generated");
-        return;
-    }
-
-    if (formDt.hasOwnProperty("stateabbr"))
-    {
-        formInfo.stateabbr = abbrState(ff_getState(selection),"abbr"); //Abbreviation
-    } else if (formDt.hasOwnProperty("state"))
-    {
-        formInfo.state = ff_getState(selection);
-    }
-    formInfo.county = ff_getCounty(selection);
-    if (formDt.hasOwnProperty("city"))
-    {
-        formInfo.city = ff_getCity(selection);
-    }
-
-    if (ff_closureActive(selection))
-    {
-        formInfo.status = "CLOSED";
-        var closureInfo = ff_getClosureInfo(selection[0]);
-        formInfo.direction = closureInfo.direction;
-        formInfo.reason = closureInfo.reason;
-        formInfo.endDate = closureInfo.endDate;
-    } else {
-        formInfo.status = "REPORTED";
-        formInfo.direction = "Two-Way";
-        formInfo.reason = document.getElementById("ff-closure-reason").value;
-        formInfo.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
-    }
-    formInfo.notes = "Form filled by "+WMEFFName+" v"+WMEFFVersion;
-
-    formLink += "?entry.";
+    /*Fields expected:
+        username
+        permalink
+        closedDir
+        closureStatus
+        closedReason
+        endDate
+        streetname
+        fromStreet
+        toStreet
+        stateabbr
+        county
+        city
+        source
+        notes
+    */
     var formArgs = [];
-    /*for (var key in formDt)
-    {
-        if (formDt[key].hasOwnProperty() && formInfo[key] !== undefined && formInfo[key] !== null)
-        {
-            formArgs[i] = formDt[key] +"="+ encodeURIComponent(formInfo[key]);
-            i+=1;
+    Object.keys(formFields).forEach(function(key,index) {
+        switch (key) {
+            case "username":
+                formValues[key] = W.loginManager.user.userName;
+                break;
+            case "permalink":
+                formValues[key] = ff_createPermalink(selection);
+                if (typeof formValues.permalink === "undefined")
+                {
+                    formfiller_log("No permalink generated");
+                    return;
+                }
+                break;
+            case "streetname":
+                formValues[key] = ff_getStreetName(selection);
+                break;
+            case "editor":
+                formValues[key] = ff_getLastEditor(selection);
+                break;
+            case "stateabbr":
+                formValues[key] = abbrState(ff_getState(selection),"abbr");
+                break;
+            case "state":
+                formValues[key] = ff_getState(selection);
+                break;
+            case "county":
+                formValues.county = ff_getCounty(selection);
+                break;
+            case "city":
+                formValues[key] = ff_getCity(selection);
+                break;
+            case "notes":
+                formValues[key] = "Form filled by "+WMEFFName+" v"+WMEFFVersion;
+                break;
+            case "closureStatus":
+                if (ff_closureActive(selection))
+                {
+                    formValues.closureStatus = "CLOSED";
+                    var closureInfo = ff_getClosureInfo(selection[0]);
+                    formValues.closedDir = closureInfo.closedDir;
+                    formValues.closedReason = closureInfo.closedReason;
+                    formValues.endDate = closureInfo.endDate;
+                } else {
+                    formValues.closureStatus = "REPORTED";
+                    formValues.closedDir = "Two-Way";
+                    formValues.closedReason = document.getElementById("ff-closure-reason").value;
+                    formValues.endDate = document.getElementById("ff-closure-endDate").value +"+"+ document.getElementById("ff-closure-endTime").value;
+                }
+                break;
+            case default:
+                formfiller_log("Nothing defined for "+ key);
+                break;
         }
-    }*/
-
-    Object.keys(formDt).forEach(function(key,index) {
-        if (formInfo[key] !== undefined && formInfo[key] !== null)
+        if (typeof formValues[key] !== "undefined" && formValues[key] !== "")
         {
-            formArgs[index] = formDt[key] +"="+ encodeURIComponent(formInfo[key]);
+            formArgs[index] = formFields[key] +"="+ encodeURIComponent(formValues[key]);
         }
     });
     formLink += formArgs.join("&entry.");
-    /*
-    //Need to do this part better, works for now
-    formLink += "?entry."+formDt.username+"="+formInfo.username;
-    formLink += "&entry."+formDt.streetname+"="+formInfo.streetname;
-    formLink += "&entry."+formDt.permalink+"="+formInfo.permalink;
-    if (formDt.hasOwnProperty("stateabbr"))
-    {
-        formInfo.state = abbrState(ff_getState(selection),"abbr"); //Abbreviation
-        formLink += "&entry."+formDt.state+"="+formInfo.state;
-    } else if (formDt.hasOwnProperty("state"))
-    {
-        formInfo.state = ff_getState(selection);
-        formLink += "&entry."+formDt.state+"="+formInfo.state;
-    }
-    if (formDt.hasOwnProperty("city"))
-    {
-        formInfo.city = encodeURIComponent(ff_getCity(selection));
-        formLink += "&entry."+formDt.city+"="+formInfo.city;
-    }
-    formLink += "&entry."+formDt.county+"="+formInfo.county;
-    formLink += "&entry."+formDt.status+"="+formInfo.status;
-    formLink += "&entry."+formDt.direction+"="+formInfo.direction;
-    formLink += "&entry."+formDt.reason+"="+formInfo.reason;
-    formLink += "&entry."+formDt.endDate+"="+formInfo.endDate;
-    formLink += "&entry."+formDt.notes+"="+formInfo.notes;*/
+
     formfiller_log(formLink);
     return formLink;
 }
@@ -538,90 +555,99 @@ function ff_addFormBtn()
     }
 
     forms = [
-    {
-        //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: "USA VEOC closures",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
-        username: "1553765347",
-        status: "1264424583",
-        permalink: "1811077109",
-        direction: "792657790",
-        reason: "345142186",
-        endDate: "1102521735",
-        streetname: "2015424420",
-        fromStreet: "1547375393",
-        toStreet: "1335391716",
-        stateabbr: "1867193205",
-        county: "1714138473",
-        source: "1803937317",
-        notes: "1648634142",
-    },
-    {
-        //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
-        name: "Illinois event/weather closures",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform",
-        username: "1204781462",
-        status: "828228572",
-        permalink: "1754051160",
-        direction: "1414240321",
-        reason: "430378754",
-        endDate: "900957975",
-        streetname: "1647952662",
-        fromStreet: "1501712688",
-        toStreet: "2094306654",
-        county: "1051351191",
-        city: "1093044522",
-        source: "172235277",
-        notes: "1722909714",
-    },
-    {
-        //https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform?entry.1204781462=ojlaw&entry.828228572=CLOSED&entry.1647952662=Test1&entry.1501712688=Test2&entry.2094306654=Test3&entry.1414240321=One-Way&entry.900957975=00/00/0000+00:00&entry.1051351191=Adams&entry.1093044522=Test4&entry.1540676081=City&entry.430378754=Test5&entry.1754051160=Test6&entry.172235277=Test7&entry.1722909714=Test8
-        name: "Wisconsin event/weather closures",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform",
-        username: "1204781462",
-        status: "828228572",
-        permalink: "1754051160",
-        direction: "1414240321",
-        reason: "430378754",
-        endDate: "900957975",
-        streetname: "1647952662",
-        fromStreet: "1501712688",
-        toStreet: "2094306654",
-        county: "1051351191",
-        city: "1093044522",
-        source: "172235277",
-        notes: "1722909714",
-    },
-    {
-        name: "US Jane TTS Pronunciation",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSeuCmC0zy7GEQDJQP5R8dndxYhXCkqzadrPgP89BvatVl1bdg/viewform",
-        state: "1065619417",
-        issue: "1086951221",
-        streetname: "1163516948",
-        incorrectp: "1191620241",
-        correctp: "1649051316",
-        permalink: "2028167849",
-        instructions: "2120232339",
-        username: "1917392591" //In comments
-    }
-    /*{
-        //https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-        name: "USA Weather related closures",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform",
-        username: "1553765347",
-        status: "1264424583",
-        permalink: "1811077109",
-        direction: "792657790",
-        reason: "345142186",
-        endDate: "1102521735",
-        streetname: "2015424420",
-        fromStreet: "1547375393",
-        toStreet: "1335391716",
-        state: "1867193205",
-        county: "1714138473",
-        source: "1803937317",
-        notes: "1648634142",
-    }*/
+        {
+            //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+            name: "USA VEOC closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
+            fields: {
+                username: "1553765347",
+                closureStatus: "1264424583",
+                permalink: "1811077109",
+                closedDir: "792657790",
+                closedReason: "345142186",
+                endDate: "1102521735",
+                streetname: "2015424420",
+                fromStreet: "1547375393",
+                toStreet: "1335391716",
+                stateabbr: "1867193205",
+                county: "1714138473",
+                source: "1803937317",
+                notes: "1648634142"
+            }
+        },
+        {
+            //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
+            name: "Illinois event/weather closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform",
+            fields: {
+                username: "1204781462",
+                closureStatus: "828228572",
+                permalink: "1754051160",
+                closedDir: "1414240321",
+                closedReason: "430378754",
+                endDate: "900957975",
+                streetname: "1647952662",
+                fromStreet: "1501712688",
+                toStreet: "2094306654",
+                county: "1051351191",
+                city: "1093044522",
+                source: "172235277",
+                notes: "1722909714"
+            }
+        },
+        {
+            //https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform?entry.1204781462=ojlaw&entry.828228572=CLOSED&entry.1647952662=Test1&entry.1501712688=Test2&entry.2094306654=Test3&entry.1414240321=One-Way&entry.900957975=00/00/0000+00:00&entry.1051351191=Adams&entry.1093044522=Test4&entry.1540676081=City&entry.430378754=Test5&entry.1754051160=Test6&entry.172235277=Test7&entry.1722909714=Test8
+            name: "Wisconsin event/weather closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform",
+            fields: {
+                username: "1204781462",
+                closureStatus: "828228572",
+                permalink: "1754051160",
+                closedDir: "1414240321",
+                closedReason: "430378754",
+                endDate: "900957975",
+                streetname: "1647952662",
+                fromStreet: "1501712688",
+                toStreet: "2094306654",
+                county: "1051351191",
+                city: "1093044522",
+                source: "172235277",
+                notes: "1722909714"
+            }
+        },
+        {
+            name: "US Jane TTS Pronunciation",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeuCmC0zy7GEQDJQP5R8dndxYhXCkqzadrPgP89BvatVl1bdg/viewform",
+            fields: {
+                username: "324217272",
+                state: "1065619417",
+                issue: "1086951221",
+                streetname: "1163516948",
+                incorrectp: "1191620241",
+                correctp: "1649051316",
+                permalink: "2028167849",
+                instructions: "2120232339",
+                comments: "1917392591"
+            }
+        }
+        /*{
+            //https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+            name: "USA Weather related closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform",
+            username: "1553765347",
+            closureStatus: "1264424583",
+            permalink: "1811077109",
+            closedDir: "792657790",
+            closedReason: "345142186",
+            endDate: "1102521735",
+            streetname: "2015424420",
+            fromStreet: "1547375393",
+            toStreet: "1335391716",
+            state: "1867193205",
+            county: "1714138473",
+            source: "1803937317",
+            notes: "1648634142",
+        }*/
     ];
 
 
@@ -753,4 +779,3 @@ function ff_addUserTab()
 
 setTimeout(formfiller_bootstrap,2000);
 })();
-
