@@ -2,7 +2,7 @@
 // @name        WME Form Filler WVMR
 // @description Use info from WME to automatically fill out related forms - for the WV MapRaid
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.0
+// @version     1.4.1
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -534,14 +534,15 @@
 
     forms = [
         {
-            //https://docs.google.com/forms/d/e/1FAIpQLScQ429pP4qMAea7PKl6kaNfVG1ppYwNtBaunKGW18yAKFrJvA/viewform?usp=pp_url&entry.2005620554=kwrigh01&entry.1065046570=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.92719%26lat%3D38.04615%26zoom%3D4%26segments%3D81145965&entry.1166974658=Rename&entry.839337160=Wiki+Guidance
+            //https://docs.google.com/forms/d/e/1FAIpQLSeaIeEfNCVHzyKJ_fEdnGspyK0ZPz3xEak35AJy3Ynxj6vVHA/viewform?usp=pp_url&entry.1145922886=kwrigh01&entry.1506690029=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.73028%26lat%3D40.07159%26zoom%3D5&entry.174332976=Rename&entry.1859845290=Map&entry.644156279=B+sharp
             name: "WV Mapraid Segment Update request",
-            url: "https://docs.google.com/forms/d/e/1FAIpQLScQ429pP4qMAea7PKl6kaNfVG1ppYwNtBaunKGW18yAKFrJvA/viewform",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeaIeEfNCVHzyKJ_fEdnGspyK0ZPz3xEak35AJy3Ynxj6vVHA/viewform",
             fields: {
-                username: "2005620554",
-                permalink: "1065046570",
-                requestType: "1166974658",
-                requestReason: "839337160"
+                username: "1145922886",
+                permalink: "1506690029",
+                requestType: "174332976",
+                requestSource: "174332976",
+                requestReason: "644156279"
             }
         }
     ];
