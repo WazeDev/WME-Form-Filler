@@ -160,17 +160,17 @@
         ];
 
         var i;
-        if (to == "abbr") {
+        if (to === "abbr") {
             input = input.toUpperCase();
             for (i = 0; i < states.length; i += 1) {
-                if (states[i][0] == input) {
+                if (states[i][0] === input) {
                     return (states[i][1]);
                 }
             }
-        } else if (to == "name") {
+        } else if (to === "name") {
             input = input.toUpperCase();
             for (i = 0; i < states.length; i += 1) {
-                if (states[i][1] == input) {
+                if (states[i][1] === input) {
                     return (states[i][0]);
                 }
             }
@@ -196,7 +196,7 @@
             }
             if (streetName === "") {
                 streetName = newStreet.name;
-            } else if (streetName != newStreet.name) {
+            } else if (streetName !== newStreet.name) {
                 streetName += ", " + newStreet.name;
             }
         }
@@ -222,7 +222,7 @@
 
             if (stateName === "") {
                 stateName = newState;
-            } else if (stateName != newState) {
+            } else if (stateName !== newState) {
                 stateName = "";
                 break;
             }
@@ -238,7 +238,7 @@
             var newCity = W.model.cities.get(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
-            } else if (cityName != newCity) {
+            } else if (cityName !== newCity) {
                 cityName = "";
                 break;
             }
@@ -370,7 +370,7 @@
         var i;
 
         //To get lat and long centered on segment
-        if (selection.length == 1) {
+        if (selection.length === 1) {
             latLon = selection[0].model.getCenter().clone();
             latLon.transform(W.map.projection.projCode, W.map.displayProjection.projCode);
             lat = latLon.y;
@@ -420,7 +420,7 @@
         var formFields = formSel.fields;
         var formLink = formSel.url + "?entry.";
         var formArgs = [];
-        if (selection.length === 0 || selection[0].model.type != "segment") {
+        if (selection.length === 0 || selection[0].model.type !== "segment") {
             formfiller_log("No segments selected.");
             return;
         }
@@ -520,7 +520,7 @@
             ffDiv.id = "formfillerDiv";
         editPanel = document.getElementById("edit-panel");
         selElem = editPanel.getElementsByClassName("selection");
-        if (selection.length === 0 || selection[0].model.type != "segment") {
+        if (selection.length === 0 || selection[0].model.type !== "segment") {
             //formfiller_log("No segments selected.");
             return;
         }
