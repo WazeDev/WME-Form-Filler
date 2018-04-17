@@ -96,6 +96,12 @@
                 }
             });
         }
+
+        if (!W.selectionManager.getSelectedFeatures) {
+            W.selectionManager.getSelectedFeatures = function () {
+                return W.selectionManager.getSelectedItems();
+            }
+        }
         formfiller_log("Init done");
         return;
     }
@@ -415,7 +421,7 @@
     }
 
     function ff_createFormLink(formSel) {
-        var selection = W.selectionManager.selectedItems;
+        var selection = W.selectionManager.getSelectedFeatures();
         var formValues = {};
         var formFields = formSel.fields;
         var formLink = formSel.url + "?entry.";
@@ -508,7 +514,7 @@
     }
 
     function ff_addFormBtn() {
-        var selection = W.selectionManager.selectedItems;
+        var selection = W.selectionManager.getSelectedFeatures();
         var ffDiv = document.createElement("div"),
             ffMnu = document.createElement("select"),
             ffBtn = document.createElement("button");
