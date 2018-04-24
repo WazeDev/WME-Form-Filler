@@ -2,7 +2,7 @@
 // @name        WME Form Filler WVMR
 // @description Use info from WME to automatically fill out related forms - for the WV MapRaid
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.1
+// @version     1.4.2
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
