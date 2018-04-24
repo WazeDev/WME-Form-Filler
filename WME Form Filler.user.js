@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.0b5
+// @version     1.4.0b6
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -98,9 +98,7 @@
         }
 
         if (!W.selectionManager.getSelectedFeatures) {
-            W.selectionManager.getSelectedFeatures = function () {
-                return W.selectionManager.getSelectedItems();
-            }
+            W.selectionManager.getSelectedFeatures = W.selectionManager.getSelectedItems;
         }
         formfiller_log("Init done");
         return;
@@ -109,7 +107,6 @@
     //Shamelessly copied from https://gist.github.com/CalebGrove/c285a9510948b633aa47
     function abbrState(input, to) {
         var states = [
-            ["ARIZONA", "AZ"],
             ["ALABAMA", "AL"],
             ["ALASKA", "AK"],
             ["ARIZONA", "AZ"],
@@ -118,6 +115,7 @@
             ["COLORADO", "CO"],
             ["CONNECTICUT", "CT"],
             ["DELAWARE", "DE"],
+            ["DISTRICT OF COLUMBIA", "DC"],
             ["FLORIDA", "FL"],
             ["GEORGIA", "GA"],
             ["HAWAII", "HI"],
@@ -126,7 +124,6 @@
             ["INDIANA", "IN"],
             ["IOWA", "IA"],
             ["KANSAS", "KS"],
-            ["KENTUCKY", "KY"],
             ["KENTUCKY", "KY"],
             ["LOUISIANA", "LA"],
             ["MAINE", "ME"],
