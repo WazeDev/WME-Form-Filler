@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.0
+// @version     1.4.1
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -95,6 +95,11 @@
                     ff_addUserTab();
                 }
             });
+        }
+
+        // Unit switched (imperial/metric)
+        if (W.prefs) {
+            W.prefs.on("change:isImperial", ff_addUserTab);
         }
 
         if (!W.selectionManager.getSelectedFeatures) {
