@@ -571,6 +571,24 @@
                     comments: "1917392591"
                 }
             }, {
+                //https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-79.99979%26lat%3D37.89567%26zoom%3D5%26segments%3D82457306,82457308,82457338&entry.792657790=Two-Way&entry.345142186=Bridge+Work&entry.1102521735=2018-07-01+23:59&entry.2015424420=Morris+Hollow+Rd&entry.1547375393=1st&entry.1335391716=2nd&entry.1867193205=VA&entry.1714138473=Alleghany&entry.1803937317=VDOT&entry.1648634142=Test+Closure
+                name: "VA Closures",
+                url: "https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform",
+                fields: {
+                    username: "1553765347",
+                    closureStatus: "1264424583",
+                    permalink: "1811077109",
+                    closedDir: "792657790",
+                    closedReason: "345142186",
+                    endDate: "1102521735",
+                    streetname: "2015424420",
+                    fromStreet: "1547375393",
+                    toStreet: "1335391716",
+                    county: "1714138473",
+                    source: "1803937317",
+                    notes: "1648634142"
+                }
+            }, {
                 //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
                 name: "Illinois event/weather closures",
                 url: "https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform",
@@ -591,7 +609,7 @@
                 }
             }, {
                 //https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.26934%26lat%3D39.39069%26zoom%3D5%26segments%3D504613052,55526394,55530967&entry.792657790=Two-Way&entry.345142186=Road+Slip&entry.1102521735=2018-06-01+16:00&entry.2015424420=Janes+Hill+Rd&entry.1547375393&entry.1335391716&entry.1714138473=Harrison+&entry.1803937317=WVDOT+&entry.1648634142=Closed+Indefinitely
-                name: "WV closures",
+                name: "WV Closures",
                 url: "https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform",
                 fields: {
                     username: "1553765347",
