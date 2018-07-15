@@ -2,7 +2,11 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
+<<<<<<< HEAD
 // @version     1.4.3
+=======
+// @version     2.0a1
+>>>>>>> 8756e47... Save settings as JSON
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -702,38 +706,47 @@
         var today = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1 < 10 ? "0" + (todayDate.getMonth() + 1) : todayDate.getMonth() + 1) + "-" + todayDate.getDate();
         futureDate.setDate(futureDate.getDate() + daysInFuture);
 
-        var ffOpenInTab = localStorage.getItem("ff-open-in-tab");
-        if (ffOpenInTab === "1") {
-            $("#ff-open-in-tab").trigger("click");
-        }
-        var ffClosureReason = localStorage.getItem("ff-closure-reason");
-        if (ffClosureReason !== null) {
-            $("#ff-closure-reason").val(ffClosureReason);
-        }
-        var ffClosureEndDate = localStorage.getItem("ff-closure-endDate");
-        if (ffClosureEndDate !== null && ffClosureEndDate !== "" && ffClosureEndDate >= today) {
-            $("#ff-closure-endDate").val(ffClosureEndDate);
+        if (localStorage.hasOwnProperty("WMEFormFillerSettings")) {
+            formfiller_log("New settings exist");
+            var settings = JSON.parse(localStorage.WMEFormFillerSettings);
         } else {
-            var closureDate = futureDate.getFullYear() + "-" + (futureDate.getMonth() + 1 < 10 ? "0" + (futureDate.getMonth() + 1) : futureDate.getMonth() + 1) + "-" + (futureDate.getDate() < 10 ? "0" + futureDate.getDate() : futureDate.getDate());
-            $("#ff-closure-endDate").val(closureDate);
-        }
-        var ffClosureEndTime = localStorage.getItem("ff-closure-endTime");
-        if (ffClosureEndTime !== null && ffClosureEndTime !== "") {
-            $("#ff-closure-endTime").val(ffClosureEndTime);
+            var ffOpenInTab = localStorage.getItem("ff-open-in-tab");
+            if (ffOpenInTab === "1") {
+                $("#ff-open-in-tab").trigger("click");
+                localStorage.removeItem("ff-open-in-tab");
+            }
+            var ffClosureReason = localStorage.getItem("ff-closure-reason");
+            if (ffClosureReason !== null) {
+                $("#ff-closure-reason").val(ffClosureReason);
+                localStorage.removeItem("ff-closure-reason");
+            }
+            var ffClosureEndDate = localStorage.getItem("ff-closure-endDate");
+            if (ffClosureEndDate !== null && ffClosureEndDate !== "" && ffClosureEndDate >= today) {
+                $("#ff-closure-endDate").val(ffClosureEndDate);
+            } else {
+                var closureDate = futureDate.getFullYear() + "-" + (futureDate.getMonth() + 1 < 10 ? "0" + (futureDate.getMonth() + 1) : futureDate.getMonth() + 1) + "-" + (futureDate.getDate() < 10 ? "0" + futureDate.getDate() : futureDate.getDate());
+                $("#ff-closure-endDate").val(closureDate);
+                localStorage.removeItem("ff-closure-endDate");
+            }
+            var ffClosureEndTime = localStorage.getItem("ff-closure-endTime");
+            if (ffClosureEndTime !== null && ffClosureEndTime !== "") {
+                $("#ff-closure-endTime").val(ffClosureEndTime);
+                localStorage.removeItem("ff-closure-endTime");
+            }
+            ff_saveSettings();
         }
         //formfiller_log("Settings loaded");
         return;
     }
 
     function ff_saveSettings() {
-        if ($("#ff-open-in-tab").prop("checked")) {
-            localStorage.setItem("ff-open-in-tab", "1");
-        } else {
-            localStorage.setItem("ff-open-in-tab", "0");
-        }
-        localStorage.setItem("ff-closure-reason", $("#ff-closure-reason").val());
-        localStorage.setItem("ff-closure-endDate", $("#ff-closure-endDate").val());
-        localStorage.setItem("ff-closure-endTime", $("#ff-closure-endTime").val());
+        var newSettings = {};
+        
+        newSettings.openTab = $("#ff-open-in-tab").prop("checked");
+        newSettings.closureReason = $("#ff-closure-reason").val();
+        newSettings.closureReason = $("#ff-closure-endDate").val();
+        newSettings.closureReason = $("#ff-closure-endTime").val();
+        localStorage.setItem("WMEFormFillerSettings", JSON.stringify(newSettings));
         //formfiller_log("Settings saved");
         return;
     }
