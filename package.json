@@ -1,0 +1,29 @@
+{
+  "name": "wme-form-filler",
+  "version": "2.0.0",
+  "description": "Use info from WME to automatically fill out a form",
+  "main": "WME Form Filler.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WazeDev/WME-Form-Filler.git"
+  },
+  "keywords": [
+    "Waze",
+    "WME"
+  ],
+  "author": "crazycaveman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WazeDev/WME-Form-Filler/issues"
+  },
+  "homepage": "https://github.com/WazeDev/WME-Form-Filler#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0"
+  }
+}
