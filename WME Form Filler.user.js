@@ -201,8 +201,8 @@
     function ff_getStreetName(selection) {
         var streetName = '';
 
-        for (i = 0; i < selection.length; i += 1) {
-            var newStreet = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID);
+        for (let i = 0; i < selection.length; i += 1) {
+            let newStreet = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID);
             if (typeof newStreet === 'undefined' || newStreet.name === null) {
                 newStreet = 'No Name';
             }
@@ -218,10 +218,10 @@
     function ff_getState(selection) {
         var stateName = '';
 
-        for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
-            var sID = W.model.cities.getObjectById(cID).attributes.stateID;
-            var newState = W.model.states.getObjectById(sID).name;
+        for (let i = 0; i < selection.length; i += 1) {
+            let cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            let sID = W.model.cities.getObjectById(cID).attributes.stateID;
+            let newState = W.model.states.getObjectById(sID).name;
 
             if (newState === '') {
                 sID = W.model.cities.getObjectById(cID).attributes.countryID;
@@ -242,11 +242,11 @@
     }
 
     function ff_getCity(selection) {
-        var cityName = '',
-            i;
-        for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
-            var newCity = W.model.cities.getObjectById(cID).attributes.name;
+        var cityName = '';
+
+        for (let i = 0; i < selection.length; i += 1) {
+            let cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            let newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === '') {
                 cityName = newCity;
             } else if (cityName !== newCity) {
@@ -269,7 +269,6 @@
                     let response = JSON.parse(xhr.responseText);
                     if (response.status !== 'OK') {
                         formfiller_log(`Error getting county name (${response.status})`);
-                        return county;
                     }
                     let addrComps = response.results[0].address_components;
                     let comp;
