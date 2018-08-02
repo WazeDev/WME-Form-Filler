@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.2
+// @version     1.4.3
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -198,7 +198,7 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var newStreet = W.model.streets.get(selection[i].model.attributes.primaryStreetID);
+            var newStreet = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID);
             if (typeof newStreet === "undefined" || newStreet.name === null) {
                 newStreet = "No Name";
             }
@@ -216,13 +216,13 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.get(selection[i].model.attributes.primaryStreetID).cityID;
-            var sID = W.model.cities.get(cID).attributes.stateID;
-            var newState = W.model.states.get(sID).name;
+            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            var sID = W.model.cities.getObjectById(cID).attributes.stateID;
+            var newState = W.model.states.getObjectById(sID).name;
 
             if (newState === "") {
-                sID = W.model.cities.get(cID).attributes.countryID;
-                newState = W.model.countries.get(sID).name;
+                sID = W.model.cities.getObjectById(cID).attributes.countryID;
+                newState = W.model.countries.getObjectById(sID).name;
                 formfiller_log("cID: " + cID);
                 formfiller_log("sID: " + sID);
                 formfiller_log("newState: " + newState);
@@ -242,8 +242,8 @@
         var cityName = "",
             i;
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.get(selection[i].model.attributes.primaryStreetID).cityID;
-            var newCity = W.model.cities.get(cID).attributes.name;
+            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            var newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
             } else if (cityName !== newCity) {
@@ -264,6 +264,10 @@
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
+                    if (response.status !== "OK") {
+                        formfiller_log(`Error getting county name (${response.status})`);
+                        return county;
+                    }
                     var addrComps = response.results[0].address_components;
                     var comp;
                     for (comp = 0; comp < addrComps.length; comp += 1) {
@@ -412,7 +416,7 @@
                 formfiller_log("Unable to get updatedBy on " + selected.model.attributes.id);
                 eID = selected.model.attributes.createdBy;
             }
-            newEdName = W.model.users.get(eID).userName;
+            newEdName = W.model.users.getObjectById(eID).userName;
             if (editorNames.indexOf(newEdName) === -1) {
                 editorNames += ", " + newEdName;
             }
