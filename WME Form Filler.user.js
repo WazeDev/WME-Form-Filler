@@ -28,14 +28,50 @@
     var settings = {};
     var settingsKey = 'WMEFormFillerSettings';
 
+    var cl = {
+        e: 1,
+        error: 1,
+        w: 2,
+        warn: 2,
+        i: 3,
+        info: 3,
+        d: 4,
+        debug: 4,
+        l: 0,
+        log: 0,
+    };
+
+    function log(message, level = cl.log) {
+        switch (level) {
+        case 1:
+        case 'error':
+            console.error(`${scriptSName}`, message);
+            break;
+        case 2:
+        case 'warn':
+            console.warn(`${scriptSName}`, message);
+            break;
+        case 3:
+        case 'info':
+            console.info(`${scriptSName}`, message);
+            break;
+        case 4:
+        case 'debug':
+            console.debug(`${scriptSName}`, message);
+            break;
+        default:
+            console.log(`${scriptSName}`, message);
+        }
+    }
+
     function formfiller_bootstrap() {
-        formfiller_log('Running bootstrap');
+        log('Running bootstrap', cl.log);
 
         if (!W && !W.app && !W.map) {
             setTimeout(formfiller_bootstrap, 500);
             return;
         }
-        formfiller_log('Starting init');
+        log('Starting init', cl.log);
         formfiller_init();
     }
 
@@ -110,7 +146,7 @@
         if (!W.selectionManager.getSelectedFeatures) {
             W.selectionManager.getSelectedFeatures = W.selectionManager.getSelectedItems;
         }
-        formfiller_log('Init done');
+        log('Init done', cl.log);
     }
 
     //Shamelessly copied from https://gist.github.com/CalebGrove/c285a9510948b633aa47
@@ -191,11 +227,7 @@
     }
 
     function formfiller_log(message) {
-        if (typeof message === 'string') {
-            console.log(scriptSName + message);
-        } else {
-            console.log(scriptSName, message);
-        }
+        log(message, cl.log);
     }
 
     function ff_getStreetName(selection) {
@@ -226,9 +258,9 @@
             if (newState === '') {
                 sID = W.model.cities.getObjectById(cID).attributes.countryID;
                 newState = W.model.countries.getObjectById(sID).name;
-                formfiller_log(`cID: ${cID}`);
-                formfiller_log(`sID: ${sID}`);
-                formfiller_log(`newState: ${newState}`);
+                log(`cID: ${cID}`, cl.log);
+                log(`sID: ${sID}`, cl.log);
+                log(`newState: ${newState}`, cl.log);
             }
 
             if (stateName === '') {
@@ -260,7 +292,7 @@
     function ff_getCounty(selection) {
         var county = '';
         var center = W.map.center.clone().transform(W.map.projection.projCode, W.map.displayProjection.projCode);
-        //formfiller_log("Getting county for "+center.lat.toString()+","+center.lon.toString());
+        //log("Getting county for "+center.lat.toString(, cl.log)+","+center.lon.toString());
         var xhr = new XMLHttpRequest();
         xhr.open('GET', `https://maps.googleapis.com/maps/api/geocode/json?latlng=${center.lat},${center.lon}`, false);
         xhr.onload = function () {
@@ -268,14 +300,14 @@
                 if (xhr.status === 200) {
                     let response = JSON.parse(xhr.responseText);
                     if (response.status !== 'OK') {
-                        formfiller_log(`Error getting county name (${response.status})`);
+                        log(`Error getting county name (${response.status})`, cl.log);
                     }
                     let addrComps = response.results[0].address_components;
                     let comp;
                     for (comp = 0; comp < addrComps.length; comp += 1) {
                         if (addrComps[comp].types.indexOf('administrative_area_level_2') !== -1) {
                             county = addrComps[comp].long_name;
-                            //formfiller_log("ff_getCounty: "+county);
+                            //log("ff_getCounty: "+county, cl.log);
                             let countyIndex = (county.indexOf(' County') !== -1
                                 ? county.indexOf(' County') : county.indexOf(' Parish'));
                             if (countyIndex !== -1) {
@@ -301,15 +333,15 @@
     {
         county = addrComps[comp].long_name;
         county = county.slice(0,county.indexOf(" County"));
-        formfiller_log("JSON func "+county);
+        log("JSON func "+county, cl.log);
         break;
         }
         }
         }
         if (county === "")
         county = "Not found";
-        formfiller_log("Got county");
-        formfiller_log(county);
+        log("Got county", cl.log);
+        log(county, cl.log);
         return county;
         });*/
     }
@@ -397,7 +429,7 @@
                     alert(`This zoom level (${zoom.toString()}) cannot be used for this road type!`
                         + 'Please increase your zoom:\n'
                         + 'Streets: 4+\nOther drivable and Non-drivable: 3+\nHighways and PS: 2+');
-                    formfiller_log('Zoom level not correct for segment: '
+                    log('Zoom level not correct for segment: '
                         + `${zoom.toString()} ${segment.attributes.roadType.toString()}`);
                     return '';
                 }
@@ -415,7 +447,7 @@
         selection.forEach((selected) => {
             eID = selected.model.attributes.updatedBy;
             if (typeof eID !== 'undefined') {
-                formfiller_log(`Unable to get updatedBy on ${selected.model.attributes.id}`);
+                log(`Unable to get updatedBy on ${selected.model.attributes.id}`, cl.log);
                 eID = selected.model.attributes.createdBy;
             }
             newEdName = W.model.users.getObjectById(eID).userName;
@@ -434,7 +466,7 @@
         var formLink = `${formSel.url}?entry.`;
         var formArgs = [];
         if (selection.length === 0 || selection[0].model.type !== 'segment') {
-            formfiller_log('No segments selected.');
+            log('No segments selected.', cl.log);
             return '';
         }
 
@@ -463,7 +495,7 @@
             case 'permalink':
                 formValues[key] = ff_createPermalink(selection);
                 if (formValues[key] === '') {
-                    formfiller_log('No permalink generated');
+                    log('No permalink generated', cl.log);
                 }
                 break;
             case 'streetname':
@@ -505,7 +537,7 @@
                 }
                 break;
             default:
-                formfiller_log(`Nothing defined for ${key}`);
+                log(`Nothing defined for ${key}`, cl.log);
                 break;
             }
 
@@ -516,7 +548,7 @@
         });
         formLink += formArgs.join('&entry.');
 
-        formfiller_log(formLink);
+        log(formLink, cl.log);
         return formLink;
     }
 
@@ -535,11 +567,11 @@
         editPanel = document.getElementById('edit-panel');
         selElem = editPanel.getElementsByClassName('selection');
         if (selection.length === 0 || selection[0].model.type !== 'segment') {
-            //formfiller_log("No segments selected.");
+            //log("No segments selected.", cl.log);
             return;
         }
         if (document.getElementById('formfillerDiv')) {
-            //formfiller_log("Div already created");
+            //log("Div already created", cl.log);
             return;
         }
 
@@ -710,7 +742,7 @@
         futureDate.setDate(futureDate.getDate() + daysInFuture);
 
         if (Object.prototype.hasOwnProperty.call(localStorage, settingsKey)) {
-            formfiller_log('New settings exist');
+            log('New settings exist', cl.log);
             settings = JSON.parse(localStorage[settingsKey]);
             Object.keys(defaultSettings).forEach((prop) => {
                 if (!Object.prototype.hasOwnProperty.call(settings, prop)) {
@@ -745,7 +777,7 @@
             }
             ff_saveSettings();
         }
-        //formfiller_log("Settings loaded");
+        //log("Settings loaded", cl.log);
     }
 
     function ff_saveSettings() {
@@ -756,7 +788,7 @@
         newSettings.closureReason = $('#ff-closure-endDate').val();
         newSettings.closureReason = $('#ff-closure-endTime').val();
         localStorage.setItem(settingsKey, JSON.stringify(newSettings));
-        //formfiller_log("Settings saved");
+        //log("Settings saved", cl.log);
     }
 
     function ff_addUserTab() {
