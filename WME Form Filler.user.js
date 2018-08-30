@@ -375,7 +375,7 @@
         var latLon = W.map.center.clone().transform(W.map.projection.projCode, W.map.displayProjection.projCode);
         var lat = latLon.lat,
             lon = latLon.lon;
-        var env = W.location.code;
+        var env = W.location ? W.location.code : W.app.getAppRegionCode();
         var type = "segments";
         var zoom = W.map.zoom;
         var zoomToRoadType = W.Config.segments.zoomToRoadType;
