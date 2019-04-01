@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.4.2
+// @version     1.4.4.3
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -68,22 +68,22 @@
         ff_addUserTab();
         ff_addFormBtn();
         var formFillerObserver = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    // Mutation is a NodeList and doesn't support forEach like an array
-                    for (var i = 0; i < mutation.addedNodes.length; i += 1) {
-                        var addedNode = mutation.addedNodes[i];
+            mutations.forEach(function (mutation) {
+                // Mutation is a NodeList and doesn't support forEach like an array
+                for (var i = 0; i < mutation.addedNodes.length; i += 1) {
+                    var addedNode = mutation.addedNodes[i];
 
-                        // Only fire up if it's a node
-                        if (addedNode.nodeType === Node.ELEMENT_NODE) {
-                            var selectionDiv = addedNode.querySelector("div.selection");
+                    // Only fire up if it's a node
+                    if (addedNode.nodeType === Node.ELEMENT_NODE) {
+                        var selectionDiv = addedNode.querySelector("div.selection");
 
-                            if (selectionDiv) {
-                                ff_addFormBtn();
-                            }
+                        if (selectionDiv) {
+                            ff_addFormBtn();
                         }
                     }
-                });
+                }
             });
+        });
         formFillerObserver.observe(document.getElementById("edit-panel"), {
             childList: true,
             subtree: true
@@ -194,21 +194,19 @@
     }
 
     function ff_getStreetName(selection) {
-        var streetName = "",
+        var streetName = [],
             i;
 
         for (i = 0; i < selection.length; i += 1) {
             var newStreet = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID);
             if (typeof newStreet === "undefined" || newStreet.name === null) {
-                newStreet = "No Name";
+                newStreet = { name: "No Name" };
             }
-            if (streetName === "") {
-                streetName = newStreet.name;
-            } else if (streetName !== newStreet.name) {
-                streetName += ", " + newStreet.name;
+            if (streetName.indexOf(newStreet.name) === -1) {
+                streetName.push(newStreet.name);
             }
         }
-        return streetName;
+        return streetName.join(", ");
     }
 
     function ff_getState(selection) {
@@ -256,7 +254,8 @@
 
     function ff_getCounty(selection) {
         var county = "";
-        var center = W.map.center.clone().transform(W.map.projection.projCode, W.map.displayProjection.projCode);
+        // Disable county for now, currently broken
+        /*var center = W.map.center.clone().transform(W.map.projection.projCode, W.map.displayProjection.projCode);
         //formfiller_log("Getting county for "+center.lat.toString()+","+center.lon.toString());
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + center.lat + "," + center.lon, false);
@@ -284,31 +283,8 @@
                 }
             }
         };
-        xhr.send(null);
+        xhr.send(null);*/
         return county;
-
-        //Async call. Figure this out!
-        /*return $.getJSON("https://maps.googleapis.com/maps/api/geocode/json?latlng="+center.lat+","+center.lon, function(data) {
-        if (data.status === "OK")
-    {
-        var addrComps = data.results[0].address_components;
-        for (comp = 0; comp < addrComps.length; comp+=1)
-    {
-        if (addrComps[comp].types.indexOf("administrative_area_level_2") !== -1)
-    {
-        county = addrComps[comp].long_name;
-        county = county.slice(0,county.indexOf(" County"));
-        formfiller_log("JSON func "+county);
-        break;
-        }
-        }
-        }
-        if (county === "")
-        county = "Not found";
-        formfiller_log("Got county");
-        formfiller_log(county);
-        return county;
-        });*/
     }
 
     function ff_closureActive(selection) {
@@ -316,8 +292,8 @@
         for (i = 0; i < selection.length; i += 1) {
             if (selection[i].model.hasClosures()) {
                 if (W.model.roadClosures.getByAttributes({
-                        segID: selection[i].model.attributes.id
-                    })[0].active) {
+                    segID: selection[i].model.attributes.id
+                })[0].active) {
                     return true;
                 }
             }
@@ -335,9 +311,9 @@
         };
         var segID = seg.model.attributes.id;
         var closureList = W.model.roadClosures.getByAttributes({
-                segID: segID,
-                active: true
-            });
+            segID,
+            active: true
+        });
         var i;
 
         for (i = 0; i < closureList.length; i += 1) {
@@ -542,132 +518,114 @@
         }
 
         forms = [{
-                //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-                name: "USA VEOC closures",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
-                fields: {
-                    username: "1553765347",
-                    closureStatus: "1264424583",
-                    permalink: "1811077109",
-                    closedDir: "792657790",
-                    closedReason: "345142186",
-                    endDate: "1102521735",
-                    streetname: "2015424420",
-                    fromStreet: "1547375393",
-                    toStreet: "1335391716",
-                    stateabbr: "1867193205",
-                    county: "1714138473",
-                    source: "1803937317",
-                    notes: "1648634142"
-                }
-            }, {
-                name: "US Jane TTS Pronunciation",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLSeuCmC0zy7GEQDJQP5R8dndxYhXCkqzadrPgP89BvatVl1bdg/viewform",
-                fields: {
-                    username: "324217272",
-                    state: "1065619417",
-                    issue: "1086951221",
-                    streetname: "1163516948",
-                    incorrectp: "1191620241",
-                    correctp: "1649051316",
-                    permalink: "2028167849",
-                    instructions: "2120232339",
-                    comments: "1917392591"
-                }
-            }, {
-                //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
-                name: "IL closures",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform",
-                fields: {
-                    username: "1204781462",
-                    closureStatus: "828228572",
-                    permalink: "1754051160",
-                    closedDir: "1414240321",
-                    closedReason: "430378754",
-                    endDate: "900957975",
-                    streetname: "1647952662",
-                    fromStreet: "1501712688",
-                    toStreet: "2094306654",
-                    county: "1051351191",
-                    city: "1093044522",
-                    source: "172235277",
-                    notes: "1722909714"
-                }
-            }, {
-                //https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-79.99979%26lat%3D37.89567%26zoom%3D5%26segments%3D82457306,82457308,82457338&entry.792657790=Two-Way&entry.345142186=Bridge+Work&entry.1102521735=2018-07-01+23:59&entry.2015424420=Morris+Hollow+Rd&entry.1547375393=1st&entry.1335391716=2nd&entry.1867193205=VA&entry.1714138473=Alleghany&entry.1803937317=VDOT&entry.1648634142=Test+Closure
-                name: "VA Closures",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform",
-                fields: {
-                    username: "1553765347",
-                    closureStatus: "1264424583",
-                    permalink: "1811077109",
-                    closedDir: "792657790",
-                    closedReason: "345142186",
-                    endDate: "1102521735",
-                    streetname: "2015424420",
-                    fromStreet: "1547375393",
-                    toStreet: "1335391716",
-                    stateabbr: "1867193205",
-                    county: "1714138473",
-                    source: "1803937317",
-                    notes: "1648634142"
-                }
-            }, {
-                //https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform?entry.1204781462=ojlaw&entry.828228572=CLOSED&entry.1647952662=Test1&entry.1501712688=Test2&entry.2094306654=Test3&entry.1414240321=One-Way&entry.900957975=00/00/0000+00:00&entry.1051351191=Adams&entry.1093044522=Test4&entry.1540676081=City&entry.430378754=Test5&entry.1754051160=Test6&entry.172235277=Test7&entry.1722909714=Test8
-                name: "WI closures",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform",
-                fields: {
-                    username: "1204781462",
-                    closureStatus: "828228572",
-                    permalink: "1754051160",
-                    closedDir: "1414240321",
-                    closedReason: "430378754",
-                    endDate: "900957975",
-                    streetname: "1647952662",
-                    fromStreet: "1501712688",
-                    toStreet: "2094306654",
-                    county: "1051351191",
-                    city: "1093044522",
-                    source: "172235277",
-                    notes: "1722909714"
-                }
-            }, {
-                //https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.26934%26lat%3D39.39069%26zoom%3D5%26segments%3D504613052,55526394,55530967&entry.792657790=Two-Way&entry.345142186=Road+Slip&entry.1102521735=2018-06-01+16:00&entry.2015424420=Janes+Hill+Rd&entry.1547375393&entry.1335391716&entry.1714138473=Harrison+&entry.1803937317=WVDOT+&entry.1648634142=Closed+Indefinitely
-                name: "WV Closures",
-                url: "https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform",
-                fields: {
-                    username: "1553765347",
-                    closureStatus: "1264424583",
-                    permalink: "1811077109",
-                    closedDir: "792657790",
-                    closedReason: "345142186",
-                    endDate: "1102521735",
-                    streetname: "2015424420",
-                    fromStreet: "1547375393",
-                    toStreet: "1335391716",
-                    county: "1714138473",
-                    source: "1803937317",
-                    notes: "1648634142"
-                }
+            //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+            name: "USA VEOC closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
+            fields: {
+                username: "1553765347",
+                closureStatus: "1264424583",
+                permalink: "1811077109",
+                closedDir: "792657790",
+                closedReason: "345142186",
+                endDate: "1102521735",
+                streetname: "2015424420",
+                fromStreet: "1547375393",
+                toStreet: "1335391716",
+                stateabbr: "1867193205",
+                county: "1714138473",
+                source: "1803937317",
+                notes: "1648634142"
             }
-            /*{
-            //https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
-            name: "USA Weather related closures",
-            url: "https://docs.google.com/forms/d/e/1FAIpQLScY_5WKyYTqvH1fdiBThqLO4DRIzFzgdBtBexw5-iKL_LOzBw/viewform",
-            username: "1553765347",
-            closureStatus: "1264424583",
-            permalink: "1811077109",
-            closedDir: "792657790",
-            closedReason: "345142186",
-            endDate: "1102521735",
-            streetname: "2015424420",
-            fromStreet: "1547375393",
-            toStreet: "1335391716",
-            state: "1867193205",
-            county: "1714138473",
-            source: "1803937317",
-            notes: "1648634142",
-            }*/
+        }, {
+            name: "US Jane TTS Pronunciation",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeuCmC0zy7GEQDJQP5R8dndxYhXCkqzadrPgP89BvatVl1bdg/viewform",
+            fields: {
+                username: "324217272",
+                state: "1065619417",
+                issue: "1086951221",
+                streetname: "1163516948",
+                incorrectp: "1191620241",
+                correctp: "1649051316",
+                permalink: "2028167849",
+                instructions: "2120232339",
+                comments: "1917392591"
+            }
+        }, {
+            //https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform?entry.1204781462=Reporter&entry.828228572=Reported&entry.1647952662=Street+name+&entry.1501712688=From+street+&entry.2094306654=To+street+&entry.1414240321=Two-Way&entry.900957975=10/27/2016+00:00&entry.1051351191=Adams&entry.1093044522=City+&entry.1540676081=IDOT&entry.430378754=Reason+&entry.1754051160=Permalink+&entry.172235277=Source+&entry.1722909714=Notes+
+            name: "IL closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSff7nsBw8qxCojBdxrjTPl6tercqyyzGy92Vif_SBdHkYDchw/viewform",
+            fields: {
+                username: "1204781462",
+                closureStatus: "828228572",
+                permalink: "1754051160",
+                closedDir: "1414240321",
+                closedReason: "430378754",
+                endDate: "900957975",
+                streetname: "1647952662",
+                fromStreet: "1501712688",
+                toStreet: "2094306654",
+                county: "1051351191",
+                city: "1093044522",
+                source: "172235277",
+                notes: "1722909714"
+            }
+        }, {
+            //https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-79.99979%26lat%3D37.89567%26zoom%3D5%26segments%3D82457306,82457308,82457338&entry.792657790=Two-Way&entry.345142186=Bridge+Work&entry.1102521735=2018-07-01+23:59&entry.2015424420=Morris+Hollow+Rd&entry.1547375393=1st&entry.1335391716=2nd&entry.1867193205=VA&entry.1714138473=Alleghany&entry.1803937317=VDOT&entry.1648634142=Test+Closure
+            name: "VA Closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLScwEyNVqiHHdFjc4hr82zlFXW2bAsff9pqIzFUqT8Evh6YROg/viewform",
+            fields: {
+                username: "1553765347",
+                closureStatus: "1264424583",
+                permalink: "1811077109",
+                closedDir: "792657790",
+                closedReason: "345142186",
+                endDate: "1102521735",
+                streetname: "2015424420",
+                fromStreet: "1547375393",
+                toStreet: "1335391716",
+                stateabbr: "1867193205",
+                county: "1714138473",
+                source: "1803937317",
+                notes: "1648634142"
+            }
+        }, {
+            //https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform?entry.1204781462=ojlaw&entry.828228572=CLOSED&entry.1647952662=Test1&entry.1501712688=Test2&entry.2094306654=Test3&entry.1414240321=One-Way&entry.900957975=00/00/0000+00:00&entry.1051351191=Adams&entry.1093044522=Test4&entry.1540676081=City&entry.430378754=Test5&entry.1754051160=Test6&entry.172235277=Test7&entry.1722909714=Test8
+            name: "WI closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeiKY0KsO0xN69Asw77MARQFmxOy6zQXF-k2OQdWOfwtiCp7Q/viewform",
+            fields: {
+                username: "1204781462",
+                closureStatus: "828228572",
+                permalink: "1754051160",
+                closedDir: "1414240321",
+                closedReason: "430378754",
+                endDate: "900957975",
+                streetname: "1647952662",
+                fromStreet: "1501712688",
+                toStreet: "2094306654",
+                county: "1051351191",
+                city: "1093044522",
+                source: "172235277",
+                notes: "1722909714"
+            }
+        }, {
+            //https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.26934%26lat%3D39.39069%26zoom%3D5%26segments%3D504613052,55526394,55530967&entry.792657790=Two-Way&entry.345142186=Road+Slip&entry.1102521735=2018-06-01+16:00&entry.2015424420=Janes+Hill+Rd&entry.1547375393&entry.1335391716&entry.1714138473=Harrison+&entry.1803937317=WVDOT+&entry.1648634142=Closed+Indefinitely
+            name: "WV Closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform",
+            fields: {
+                username: "1553765347",
+                closureStatus: "1264424583",
+                permalink: "1811077109",
+                closedDir: "792657790",
+                closedReason: "345142186",
+                endDate: "1102521735",
+                streetname: "2015424420",
+                fromStreet: "1547375393",
+                toStreet: "1335391716",
+                county: "1714138473",
+                source: "1803937317",
+                notes: "1648634142"
+            }
+        }
         ];
 
         forms.forEach(function (key, i) {
