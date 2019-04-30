@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.4.3
+// @version     1.4.4.4
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -329,7 +329,7 @@
                     closureInfo.idRev = closureList[i].id;
                 }
                 if (closureInfo.closedReason === "") {
-                    closureInfo.closedReason = closureList[i].closedReason;
+                    closureInfo.closedReason = closureList[i].reason;
                 }
             }
         }
@@ -430,7 +430,7 @@
         notes
          */
 
-        Object.keys(formFields).forEach(function (key, index) {
+        Object.keys(formFields).forEach((key, index) => {
             switch (key) {
             case "username":
                 formValues[key] = W.loginManager.user.userName;
