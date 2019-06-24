@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.4.5
+// @version     1.4.4.6
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -354,7 +354,26 @@
         var env = W.location ? W.location.code : W.app.getAppRegionCode();
         var type = "segments";
         var zoom = W.map.zoom;
-        var zoomToRoadType = W.Config.segments.zoomToRoadType;
+        var zoomToRoadType = function (e) {
+            switch (e) {
+                case 0:
+                case 1:
+                    return [];
+                case 2:
+                    return [2, 3, 4, 6, 7, 15];
+                case 3:
+                    return [2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                default:
+                    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+            }
+        };
         var i;
 
         //To get lat and long centered on segment
@@ -369,7 +388,7 @@
             var segment = selection[i].model;
             if (segment.type === "segment") {
                 segIDs.push(segment.attributes.id);
-                if (zoomToRoadType[zoom] !== -1 && zoomToRoadType[zoom].indexOf(segment.attributes.roadType) === -1) {
+                if (zoomToRoadType(zoom) === 0 || zoomToRoadType(zoom).indexOf(segment.attributes.roadType) === -1) {
                     alert("This zoom level (" + zoom.toString() + ") cannot be used for this road type! Please increase your zoom:\n" +
                         "Streets: 4+\nOther drivable and Non-drivable: 3+\nHighways and PS: 2+");
                     formfiller_log("Zoom level not correct for segment: " + zoom.toString() + " " + segment.attributes.roadType.toString());
