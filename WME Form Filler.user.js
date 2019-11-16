@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.4.6
+// @version     1.4.5
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -462,7 +462,7 @@
                 }
                 break;
             case "streetname":
-                formValues[key] = ff_getStreetName(selection);
+                formValues[key] = W.model.hasStates ? ff_getStreetName(selection) : "";
                 break;
             case "editorName":
                 formValues[key] = ff_getLastEditor(selection);
@@ -537,6 +537,25 @@
         }
 
         forms = [{
+            //https://docs.google.com/forms/d/e/1FAIpQLScxs_FMsjcEeTD0gjWUahb3Qb0XjeB2K32n_vWLm_HV2fUweQ/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=NSW&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+            name: "AUS VEOC closures",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLScxs_FMsjcEeTD0gjWUahb3Qb0XjeB2K32n_vWLm_HV2fUweQ/viewform",
+            fields: {
+                username: "1553765347",
+                closureStatus: "1264424583",
+                permalink: "1811077109",
+                closedDir: "792657790",
+                closedReason: "345142186",
+                endDate: "1102521735",
+                streetname: "2015424420",
+                fromStreet: "1547375393",
+                toStreet: "1335391716",
+                stateabbr: "1867193205",
+                county: "1714138473",
+                source: "1803937317",
+                notes: "1648634142"
+            }
+        }, {
             //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
             name: "USA VEOC closures",
             url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
