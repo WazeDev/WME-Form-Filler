@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.5
+// @version     1.4.6
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -348,12 +348,12 @@
         //https://www.waze.com/editor/?env=usa&lon=-79.79248&lat=32.86150&layers=12709&zoom=5&mode=0&mapProblemFilter=1&mapUpdateRequestFilter=0&venueFilter=0&venues=183632201.1836387542.3102948
         var permalink = "https://www.waze.com/editor/?",
             segIDs = [];
-        var latLon = W.map.center.clone().transform(W.map.projection.projCode, W.map.displayProjection.projCode);
+        var latLon = W.map.getOLMap().center.clone().transform(W.map.getOLMap().projection.projCode, W.map.getOLMap().displayProjection.projCode);
         var lat = latLon.lat,
             lon = latLon.lon;
         var env = W.location ? W.location.code : W.app.getAppRegionCode();
         var type = "segments";
-        var zoom = W.map.zoom;
+        var zoom = W.map.getOLMap().zoom;
         var zoomToRoadType = function (e) {
             switch (e) {
                 case 0:
@@ -379,7 +379,7 @@
         //To get lat and long centered on segment
         if (selection.length === 1) {
             latLon = selection[0].model.getCenter().clone();
-            latLon.transform(W.map.projection.projCode, W.map.displayProjection.projCode);
+            latLon.transform(W.map.getOLMap().projection.projCode, W.map.getOLMap().displayProjection.projCode);
             lat = latLon.y;
             lon = latLon.x;
         }
