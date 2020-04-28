@@ -665,22 +665,22 @@
                 notes: "1722909714"
             }
         }, {
-            //https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform?usp=pp_url&entry.1553765347=kwrigh01&entry.1264424583=CLOSED&entry.1811077109=https://www.waze.com/editor/?env%3Dusa%26lon%3D-80.26934%26lat%3D39.39069%26zoom%3D5%26segments%3D504613052,55526394,55530967&entry.792657790=Two-Way&entry.345142186=Road+Slip&entry.1102521735=2018-06-01+16:00&entry.2015424420=Janes+Hill+Rd&entry.1547375393&entry.1335391716&entry.1714138473=Harrison+&entry.1803937317=WVDOT+&entry.1648634142=Closed+Indefinitely
+            //https://docs.google.com/forms/d/e/1FAIpQLSd2Stl1DabZRVZ315HT6kdF78e9ysqjItR09pYtE7WiKmPotg/viewform?usp=pp_url&entry.1677745178=user&entry.1292331655=CLOSED&entry.408708691=http://waze.com&entry.52585226=Two-Way&entry.1079033335=reason&entry.1176076628=2020-05-05+05:00&entry.223275032=street&entry.1159260930=from&entry.1582819664=to&entry.2135402288=Monongalia&entry.858860694=source&entry.1440969572=notes
             name: "WV Closures",
-            url: "https://docs.google.com/forms/d/e/1FAIpQLSf3YAdjscVvJXiU4KWq0e8J8XyCyYBDyharRoXW3bf6R4wH1w/viewform",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSd2Stl1DabZRVZ315HT6kdF78e9ysqjItR09pYtE7WiKmPotg/viewform",
             fields: {
-                username: "1553765347",
-                closureStatus: "1264424583",
-                permalink: "1811077109",
-                closedDir: "792657790",
-                closedReason: "345142186",
-                endDate: "1102521735",
-                streetname: "2015424420",
-                fromStreet: "1547375393",
-                toStreet: "1335391716",
-                county: "1714138473",
-                source: "1803937317",
-                notes: "1648634142"
+                username: "1677745178",
+                closureStatus: "1292331655",
+                permalink: "408708691",
+                closedDir: "52585226",
+                closedReason: "1079033335",
+                endDate: "1176076628",
+                streetname: "223275032",
+                fromStreet: "1159260930",
+                toStreet: "1582819664",
+                county: "2135402288",
+                source: "858860694",
+                notes: "1440969572"
             }
         }
         ];
