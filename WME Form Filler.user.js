@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.7
+// @version     1.4.8
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -398,7 +398,7 @@
                 }
             }
         }
-        permalink += "env=" + env + "&lon=" + lon + "&lat=" + lat + "&zoom=" + zoom.toString() + "&" + type + "=" + segIDs.join();
+        permalink += "env=" + env + "&lon=" + lon + "&lat=" + lat + "&zoomLevel=" + zoom.toString() + "&" + type + "=" + segIDs.join();
         return permalink;
     }
 
