@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.8
+// @version     1.4.9
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -33,6 +33,15 @@
         }
         formfiller_log("Starting init");
         formfiller_init();
+    }
+
+    function formfiller_waitForSegmentEditDiv(callback, callCount = 0) {
+        const div = $('div.segment-edit-section');
+        if (div.length) {
+            callback();
+        } else if (callCount < 30) { // try for about 3 seconds
+            setTimeout(() => formfiller_waitForSegmentEditDiv(callback, ++callCount), 100);
+        }
     }
 
     function formfiller_init() {
@@ -68,28 +77,14 @@
 
         ff_addUserTab();
         ff_addFormBtn();
-        var formFillerObserver = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                // Mutation is a NodeList and doesn't support forEach like an array
-                for (var i = 0; i < mutation.addedNodes.length; i += 1) {
-                    var addedNode = mutation.addedNodes[i];
 
-                    // Only fire up if it's a node
-                    if (addedNode.nodeType === Node.ELEMENT_NODE) {
-                        var selectionDiv = addedNode.querySelector("div.selection");
+        W.selectionManager.events.on('selectionchanged', evt => {
+            const model = evt.selected[0]?.model;
+            if (model?.type === 'segment') {
+                formfiller_waitForSegmentEditDiv(ff_addFormBtn);
+            }
+        });
 
-                        if (selectionDiv) {
-                            ff_addFormBtn();
-                        }
-                    }
-                }
-            });
-        });
-        formFillerObserver.observe(document.getElementById("edit-panel"), {
-            childList: true,
-            subtree: true
-        });
-        //W.selectionManager.events.register("selectionchanged", null, ff_addFormBtn);
         if (W.app.modeController) {
             W.app.modeController.model.bind("change:mode", function (model, modeId) {
                 if (modeId === 0) {
@@ -528,7 +523,7 @@
             formLink;
             ffDiv.id = "formfillerDiv";
         editPanel = document.getElementById("edit-panel");
-        selElem = editPanel.getElementsByClassName("selection");
+        selElem = document.querySelector("div.segment-feature-editor");
         if (selection.length === 0 || selection[0].model.type !== "segment") {
             //formfiller_log("No segments selected.");
             return;
@@ -707,8 +702,7 @@
         };
         ffDiv.appendChild(ffMnu);
         ffDiv.appendChild(ffBtn);
-        selElem[0].appendChild(ffDiv);
-
+        $('div.segment-edit-section').prepend(ffDiv);
         return;
     }
 
