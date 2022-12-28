@@ -35,14 +35,14 @@
         formfiller_init();
     }
 
-    function formfiller_waitForSegmentEditDiv(callback, callCount = 0) {
+    /*function formfiller_waitForSegmentEditDiv(callback, callCount = 0) {
         const div = $('div.segment-edit-section');
         if (div.length) {
             callback();
         } else if (callCount < 30) { // try for about 3 seconds
             setTimeout(() => formfiller_waitForSegmentEditDiv(callback, ++callCount), 100);
         }
-    }
+    }*/
 
     function formfiller_init() {
         // Check document elements are ready
@@ -81,7 +81,11 @@
         W.selectionManager.events.on('selectionchanged', evt => {
             const model = evt.selected[0]?.model;
             if (model?.type === 'segment') {
-                formfiller_waitForSegmentEditDiv(ff_addFormBtn);
+                $('#formfillerDiv').show();
+            }
+            else
+            {
+                $('#formfillerDiv').hide();
             }
         });
 
@@ -518,16 +522,12 @@
             ffBtn = document.createElement("button");
         var formWindowName = "WME Form Filler result",
             formWindowSpecs = "resizable=1,menubar=0,scrollbars=1,status=0,toolbar=0";
-        var editPanel,
-            selElem,
-            formLink;
+        var formLink;
             ffDiv.id = "formfillerDiv";
-        editPanel = document.getElementById("edit-panel");
-        selElem = document.querySelector("div.segment-feature-editor");
-        if (selection.length === 0 || selection[0].model.type !== "segment") {
+        /*if (selection.length === 0 || selection[0].model.type !== "segment") {
             //formfiller_log("No segments selected.");
             return;
-        }
+        }*/
         if (document.getElementById("formfillerDiv")) {
             //formfiller_log("Div already created");
             return;
@@ -707,7 +707,7 @@
         };
         ffDiv.appendChild(ffMnu);
         ffDiv.appendChild(ffBtn);
-        $('div.segment-edit-section').prepend(ffDiv);
+        $('#edit-panel').prepend(ffDiv);
         return;
     }
 
