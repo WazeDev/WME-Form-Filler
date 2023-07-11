@@ -79,7 +79,7 @@
         ff_addFormBtn();
 
         W.selectionManager.events.on('selectionchanged', evt => {
-            const model = evt.selected[0]?.attributes.wazeFeature._wmeObject;
+            const model = evt.selected[0]?.attributes?.wazeFeature?._wmeObject;
             if (model?.type === 'segment') {
                 formfiller_waitForSegmentEditDiv(ff_addFormBtn);
             }
