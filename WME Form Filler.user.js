@@ -481,7 +481,7 @@
                 formValues[key] = ff_getCity(selection);
                 break;
             case "notes":
-                formValues[key] = "";
+                formValues[key] = "Form filled by " + WMEFFName + " v" + WMEFFVersion;
                 break;
             case "closureStatus":
                 if (selection[0].attributes.wazeFeature._wmeObject.type === "segment") {
