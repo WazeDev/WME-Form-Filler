@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     1.4.9.1
+// @version     2023.07.11
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -35,14 +35,14 @@
         formfiller_init();
     }
 
-    function formfiller_waitForSegmentEditDiv(callback, callCount = 0) {
+    /*function formfiller_waitForSegmentEditDiv(callback, callCount = 0) {
         const div = $('div.segment-edit-section');
         if (div.length) {
             callback();
         } else if (callCount < 30) { // try for about 3 seconds
             setTimeout(() => formfiller_waitForSegmentEditDiv(callback, ++callCount), 100);
         }
-    }
+    }*/
 
     function formfiller_init() {
         // Check document elements are ready
@@ -79,9 +79,13 @@
         ff_addFormBtn();
 
         W.selectionManager.events.on('selectionchanged', evt => {
-            const model = evt.selected[0]?.model;
+            const model = evt.selected[0]?.attributes?.wazeFeature?._wmeObject;
             if (model?.type === 'segment') {
-                formfiller_waitForSegmentEditDiv(ff_addFormBtn);
+                $('#formfillerDiv').show();
+            }
+            else
+            {
+                $('#formfillerDiv').hide();
             }
         });
 
@@ -194,7 +198,7 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var newStreet = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID);
+            var newStreet = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID);
             if (typeof newStreet === "undefined" || newStreet.name === null) {
                 newStreet = { name: "No Name" };
             }
@@ -210,7 +214,7 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).cityID;
             var sID = W.model.cities.getObjectById(cID).attributes.stateID;
             var newState = W.model.states.getObjectById(sID).name;
 
@@ -236,7 +240,7 @@
         var cityName = "",
             i;
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].model.attributes.primaryStreetID).cityID;
+            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).cityID;
             var newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
@@ -286,9 +290,9 @@
     function ff_closureActive(selection) {
         var i;
         for (i = 0; i < selection.length; i += 1) {
-            if (selection[i].model.hasClosures()) {
+            if (selection[i].attributes.wazeFeature._wmeObject.hasClosures()) {
                 if (W.model.roadClosures.getByAttributes({
-                    segID: selection[i].model.attributes.id
+                    segID: selection[i].attributes.wazeFeature._wmeObject.attributes.id
                 })[0].active) {
                     return true;
                 }
@@ -305,7 +309,7 @@
             idRev: "",
             closedReason: ""
         };
-        var segID = seg.model.attributes.id;
+        var segID = seg.attributes.wazeFeature._wmeObject.attributes.id;
         var closureList = W.model.roadClosures.getByAttributes({
             segID,
             active: true
@@ -375,14 +379,14 @@
 
         //To get lat and long centered on segment
         if (selection.length === 1) {
-            latLon = selection[0].model.getCenter().clone();
+            latLon = selection[0].attributes.wazeFeature._wmeObject.getCenter().clone();
             latLon = WazeWrap.Geometry.ConvertTo4326(latLon.x,latLon.y)
             lat = latLon.lat;
             lon = latLon.lon;
         }
 
         for (i = 0; i < selection.length; i += 1) {
-            var segment = selection[i].model;
+            var segment = selection[i].attributes.wazeFeature._wmeObject;
             if (segment.type === "segment") {
                 segIDs.push(segment.attributes.id);
                 if (zoomToRoadType(zoom) === 0 || zoomToRoadType(zoom).indexOf(segment.attributes.roadType) === -1) {
@@ -424,7 +428,7 @@
         var formFields = formSel.fields;
         var formLink = formSel.url + "?entry.";
         var formArgs = [];
-        if (selection.length === 0 || selection[0].model.type !== "segment") {
+        if (selection.length === 0 || selection[0].attributes.wazeFeature._wmeObject.type !== "segment") {
             formfiller_log("No segments selected.");
             return;
         }
@@ -480,7 +484,7 @@
                 formValues[key] = "Form filled by " + WMEFFName + " v" + WMEFFVersion;
                 break;
             case "closureStatus":
-                if (selection[0].model.type === "segment") {
+                if (selection[0].attributes.wazeFeature._wmeObject.type === "segment") {
                     if (ff_closureActive(selection)) {
                         formValues.closureStatus = "CLOSED";
                         var closureInfo = ff_getClosureInfo(selection[0]);
@@ -518,16 +522,12 @@
             ffBtn = document.createElement("button");
         var formWindowName = "WME Form Filler result",
             formWindowSpecs = "resizable=1,menubar=0,scrollbars=1,status=0,toolbar=0";
-        var editPanel,
-            selElem,
-            formLink;
+        var formLink;
             ffDiv.id = "formfillerDiv";
-        editPanel = document.getElementById("edit-panel");
-        selElem = document.querySelector("div.segment-feature-editor");
-        if (selection.length === 0 || selection[0].model.type !== "segment") {
+        /*if (selection.length === 0 || selection[0].model.type !== "segment") {
             //formfiller_log("No segments selected.");
             return;
-        }
+        }*/
         if (document.getElementById("formfillerDiv")) {
             //formfiller_log("Div already created");
             return;
@@ -707,7 +707,7 @@
         };
         ffDiv.appendChild(ffMnu);
         ffDiv.appendChild(ffBtn);
-        $('div.segment-edit-section').prepend(ffDiv);
+        $('#edit-panel').prepend(ffDiv);
         return;
     }
 
