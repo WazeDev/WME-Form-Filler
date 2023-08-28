@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     2023.07.11
+// @version     2023.08.27
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -214,13 +214,13 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).cityID;
+            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).attributes.cityID;
             var sID = W.model.cities.getObjectById(cID).attributes.stateID;
-            var newState = W.model.states.getObjectById(sID).name;
+            var newState = W.model.states.getObjectById(sID).attributes.name;
 
             if (newState === "") {
                 sID = W.model.cities.getObjectById(cID).attributes.countryID;
-                newState = W.model.countries.getObjectById(sID).name;
+                newState = W.model.countries.getObjectById(sID).attributes.name;
                 formfiller_log("cID: " + cID);
                 formfiller_log("sID: " + sID);
                 formfiller_log("newState: " + newState);
@@ -240,7 +240,7 @@
         var cityName = "",
             i;
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).cityID;
+            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).attributes.cityID;
             var newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
@@ -553,9 +553,9 @@
                 notes: "1648634142"
             }
         }, {
-            //https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
+            //https://docs.google.com/forms/d/e/1FAIpQLScX8hlXopzXTLEPUpXwdXBWF6qFmz1asKtX5IOy9gbdsfMmTA/viewform?entry.1553765347=username&entry.1264424583=CLOSED&entry.1811077109=permalink&entry.792657790=Two-Way&entry.345142186=reason&entry.1102521735=2016-09-20+03:00&entry.2015424420=street+name&entry.1547375393=from+street&entry.1335391716=to+street&entry.1867193205=SC&entry.1714138473=county&entry.1803937317=source&entry.1648634142=notes
             name: "USA VEOC closures",
-            url: "https://docs.google.com/forms/d/e/1FAIpQLSduBiLMhbg6nRpsEVCTcVbV4eWmHDXdIKGtuaOvzy6NZLbSgw/viewform",
+            url: "https://docs.google.com/forms/d/e/1FAIpQLScX8hlXopzXTLEPUpXwdXBWF6qFmz1asKtX5IOy9gbdsfMmTA/viewform",
             fields: {
                 username: "1553765347",
                 closureStatus: "1264424583",
