@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     2023.09.03
+// @version     2023.09.06
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -308,7 +308,8 @@
             closedReason: ""
         };
         var segID = seg.attributes.wazeFeature._wmeObject.attributes.id;
-        var closureList = W.model.roadClosures.getObjectArray();
+        var clf = W.model.roadClosures.getObjectArray();
+        var closureList = clf.filter((cl) => cl.attributes.segID === segID);
         var i;
 
         for (i = 0; i < closureList.length; i += 1) {
