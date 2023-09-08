@@ -288,10 +288,13 @@
     }
 
     function ff_closureActive(selection) {
+        var segID = selection[0].attributes.wazeFeature._wmeObject.attributes.id;
+        var clf = W.model.roadClosures.getObjectArray();
+        var closureList = clf.filter((cl) => cl.attributes.segID === segID);
         var i;
         for (i = 0; i < selection.length; i += 1) {
             if (selection[i].attributes.wazeFeature._wmeObject.hasClosures()) {
-                if (W.model.roadClosures.active) {
+                if (closureList[0].attributes.active) {
                     return true;
                 }
             }
