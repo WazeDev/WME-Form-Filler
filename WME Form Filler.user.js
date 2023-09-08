@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     2023.08.27
+// @version     2023.09.06
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -199,11 +199,11 @@
 
         for (i = 0; i < selection.length; i += 1) {
             var newStreet = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID);
-            if (typeof newStreet === "undefined" || newStreet.name === null) {
+            if (typeof newStreet === "undefined" || newStreet.attributes.name === null) {
                 newStreet = { name: "No Name" };
             }
-            if (streetName.indexOf(newStreet.name) === -1) {
-                streetName.push(newStreet.name);
+            if (streetName.indexOf(newStreet.attributes.name) === -1) {
+                streetName.push(newStreet.attributes.name);
             }
         }
         return streetName.join(", ");
@@ -291,9 +291,7 @@
         var i;
         for (i = 0; i < selection.length; i += 1) {
             if (selection[i].attributes.wazeFeature._wmeObject.hasClosures()) {
-                if (W.model.roadClosures.getByAttributes({
-                    segID: selection[i].attributes.wazeFeature._wmeObject.attributes.id
-                })[0].active) {
+                if (W.model.roadClosures.active) {
                     return true;
                 }
             }
@@ -310,26 +308,24 @@
             closedReason: ""
         };
         var segID = seg.attributes.wazeFeature._wmeObject.attributes.id;
-        var closureList = W.model.roadClosures.getByAttributes({
-            segID,
-            active: true
-        });
+        var clf = W.model.roadClosures.getObjectArray();
+        var closureList = clf.filter((cl) => cl.attributes.segID === segID);
         var i;
 
         for (i = 0; i < closureList.length; i += 1) {
-            if (closureList[i].active === true) {
+            if (closureList[i].attributes.active === true) {
                 if (closureInfo.endDate === "") {
-                    closureInfo.endDate = closureList[i].endDate;
-                } else if (closureInfo.endDate > closureList[i].endDate) {
-                    closureInfo.endDate = closureList[i].endDate;
+                    closureInfo.endDate = closureList[i].attributes.endDate;
+                } else if (closureInfo.endDate > closureList[i].attributes.endDate) {
+                    closureInfo.endDate = closureList[i].attributes.endDate;
                 }
-                if (closureList[i].forward === true) {
-                    closureInfo.idFwd = closureList[i].id;
+                if (closureList[i].attributes.forward === true) {
+                    closureInfo.idFwd = closureList[i].attributes.id;
                 } else {
-                    closureInfo.idRev = closureList[i].id;
+                    closureInfo.idRev = closureList[i].attributes.id;
                 }
                 if (closureInfo.closedReason === "") {
-                    closureInfo.closedReason = closureList[i].reason;
+                    closureInfo.closedReason = closureList[i].attributes.reason;
                 }
             }
         }
@@ -452,56 +448,56 @@
 
         Object.keys(formFields).forEach((key, index) => {
             switch (key) {
-            case "username":
-                formValues[key] = W.loginManager.user.userName;
-                break;
-            case "permalink":
-                formValues[key] = ff_createPermalink(selection);
-                if (typeof formValues.permalink === "undefined") {
-                    formfiller_log("No permalink generated");
-                    return;
-                }
-                break;
-            case "streetname":
-                formValues[key] = W.model.hasStates ? ff_getStreetName(selection) : "";
-                break;
-            case "editorName":
-                formValues[key] = ff_getLastEditor(selection);
-                break;
-            case "stateabbr":
-                formValues[key] = abbrState(ff_getState(selection), "abbr");
-                break;
-            case "state":
-                formValues[key] = ff_getState(selection);
-                break;
-            case "county":
-                formValues.county = ff_getCounty(selection);
-                break;
-            case "city":
-                formValues[key] = ff_getCity(selection);
-                break;
-            case "notes":
-                formValues[key] = "Form filled by " + WMEFFName + " v" + WMEFFVersion;
-                break;
-            case "closureStatus":
-                if (selection[0].attributes.wazeFeature._wmeObject.type === "segment") {
-                    if (ff_closureActive(selection)) {
-                        formValues.closureStatus = "CLOSED";
-                        var closureInfo = ff_getClosureInfo(selection[0]);
-                        formValues.closedDir = closureInfo.closedDir;
-                        formValues.closedReason = closureInfo.closedReason;
-                        formValues.endDate = closureInfo.endDate;
-                    } else {
-                        formValues.closureStatus = "REPORTED";
-                        formValues.closedDir = "Two-Way";
-                        formValues.closedReason = document.getElementById("ff-closure-reason").value;
-                        formValues.endDate = document.getElementById("ff-closure-endDate").value + "+" + document.getElementById("ff-closure-endTime").value;
+                case "username":
+                    formValues[key] = W.loginManager.user.attributes.userName;
+                    break;
+                case "permalink":
+                    formValues[key] = ff_createPermalink(selection);
+                    if (typeof formValues.permalink === "undefined") {
+                        formfiller_log("No permalink generated");
+                        return;
                     }
-                }
-                break;
-            default:
-                formfiller_log("Nothing defined for " + key);
-                break;
+                    break;
+                case "streetname":
+                    formValues[key] = W.model.hasStates ? ff_getStreetName(selection) : "";
+                    break;
+                case "editorName":
+                    formValues[key] = ff_getLastEditor(selection);
+                    break;
+                case "stateabbr":
+                    formValues[key] = abbrState(ff_getState(selection), "abbr");
+                    break;
+                case "state":
+                    formValues[key] = ff_getState(selection);
+                    break;
+                case "county":
+                    formValues.county = ff_getCounty(selection);
+                    break;
+                case "city":
+                    formValues[key] = ff_getCity(selection);
+                    break;
+                case "notes":
+                    formValues[key] = "Form filled by " + WMEFFName + " v" + WMEFFVersion;
+                    break;
+                case "closureStatus":
+                    if (selection[0].attributes.wazeFeature._wmeObject.type === "segment") {
+                        if (ff_closureActive(selection)) {
+                            formValues.closureStatus = "CLOSED";
+                            var closureInfo = ff_getClosureInfo(selection[0]);
+                            formValues.closedDir = closureInfo.closedDir;
+                            formValues.closedReason = closureInfo.closedReason;
+                            formValues.endDate = closureInfo.endDate;
+                        } else {
+                            formValues.closureStatus = "REPORTED";
+                            formValues.closedDir = "Two-Way";
+                            formValues.closedReason = document.getElementById("ff-closure-reason").value;
+                            formValues.endDate = document.getElementById("ff-closure-endDate").value + "+" + document.getElementById("ff-closure-endTime").value;
+                        }
+                    }
+                    break;
+                default:
+                    formfiller_log("Nothing defined for " + key);
+                    break;
             }
 
             //Add entry to form URL, if there's something to add
