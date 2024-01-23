@@ -240,7 +240,7 @@
         var cityName = "",
             i;
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).attributes.cityID;
+            var cID = W.model.streets.getObjectById(selection[i]._wmeObject.attributes.primaryStreetID).attributes.cityID;
             var newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
