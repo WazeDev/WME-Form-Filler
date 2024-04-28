@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     2023.09.06
+// @version     2024.01.23
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -79,8 +79,8 @@
         ff_addFormBtn();
 
         W.selectionManager.events.on('selectionchanged', evt => {
-            const model = evt.selected[0]?.attributes?.wazeFeature?._wmeObject;
-            if (model?.type === 'segment') {
+            const selected = W.selectionManager.getSelectedDataModelObjects();
+            if (selected.length && selected[0].type === 'segment') {
                 $('#formfillerDiv').show();
             }
             else
@@ -198,7 +198,7 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var newStreet = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID);
+            var newStreet = W.model.streets.getObjectById(selection[i]._wmeObject.attributes.primaryStreetID);
             if (typeof newStreet === "undefined" || newStreet.attributes.name === null) {
                 newStreet = { name: "No Name" };
             }
@@ -214,7 +214,7 @@
             i;
 
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).attributes.cityID;
+            var cID = W.model.streets.getObjectById(selection[i]._wmeObject.attributes.primaryStreetID).attributes.cityID;
             var sID = W.model.cities.getObjectById(cID).attributes.stateID;
             var newState = W.model.states.getObjectById(sID).attributes.name;
 
@@ -240,7 +240,7 @@
         var cityName = "",
             i;
         for (i = 0; i < selection.length; i += 1) {
-            var cID = W.model.streets.getObjectById(selection[i].attributes.wazeFeature._wmeObject.attributes.primaryStreetID).attributes.cityID;
+            var cID = W.model.streets.getObjectById(selection[i]._wmeObject.attributes.primaryStreetID).attributes.cityID;
             var newCity = W.model.cities.getObjectById(cID).attributes.name;
             if (cityName === "") {
                 cityName = newCity;
@@ -290,7 +290,7 @@
     function ff_closureActive(selection) {
         var i;
         for (i = 0; i < selection.length; i += 1) {
-            if (selection[i].attributes.wazeFeature._wmeObject.hasClosures()) {
+            if (selection[i].hasClosures) {
                 if (W.model.roadClosures.active) {
                     return true;
                 }
@@ -307,7 +307,7 @@
             idRev: "",
             closedReason: ""
         };
-        var segID = seg.attributes.wazeFeature._wmeObject.attributes.id;
+        var segID = seg._wmeObject.attributes.id;
         var clf = W.model.roadClosures.getObjectArray();
         var closureList = clf.filter((cl) => cl.attributes.segID === segID);
         var i;
@@ -375,14 +375,13 @@
 
         //To get lat and long centered on segment
         if (selection.length === 1) {
-            latLon = selection[0].attributes.wazeFeature._wmeObject.getCenter().clone();
-            latLon = WazeWrap.Geometry.ConvertTo4326(latLon.x,latLon.y)
+            latLon = structuredClone(selection[0]._wmeObject.getCenterLonLat());
             lat = latLon.lat;
             lon = latLon.lon;
         }
 
         for (i = 0; i < selection.length; i += 1) {
-            var segment = selection[i].attributes.wazeFeature._wmeObject;
+            var segment = selection[i]._wmeObject;
             if (segment.type === "segment") {
                 segIDs.push(segment.attributes.id);
                 if (zoomToRoadType(zoom) === 0 || zoomToRoadType(zoom).indexOf(segment.attributes.roadType) === -1) {
@@ -424,7 +423,7 @@
         var formFields = formSel.fields;
         var formLink = formSel.url + "?entry.";
         var formArgs = [];
-        if (selection.length === 0 || selection[0].attributes.wazeFeature._wmeObject.type !== "segment") {
+        if (selection.length === 0 || selection[0].featureType !== "segment") {
             formfiller_log("No segments selected.");
             return;
         }
@@ -480,7 +479,7 @@
                     formValues[key] = "Form filled by " + WMEFFName + " v" + WMEFFVersion;
                     break;
                 case "closureStatus":
-                    if (selection[0].attributes.wazeFeature._wmeObject.type === "segment") {
+                    if (selection[0].featureType === "segment") {
                         if (ff_closureActive(selection)) {
                             formValues.closureStatus = "CLOSED";
                             var closureInfo = ff_getClosureInfo(selection[0]);
