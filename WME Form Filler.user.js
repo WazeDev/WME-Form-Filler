@@ -2,7 +2,7 @@
 // @name        WME Form Filler
 // @description Use info from WME to automatically fill out related forms
 // @namespace   https://greasyfork.org/users/6605
-// @version     2024.01.23
+// @version     2024.04.29
 // @homepage    https://github.com/WazeDev/WME-Form-Filler
 // @supportURL  https://github.com/WazeDev/WME-Form-Filler/issues
 // @include     https://www.waze.com/editor
@@ -313,7 +313,7 @@
         var i;
 
         for (i = 0; i < closureList.length; i += 1) {
-            if (closureList[i].attributes.active === true) {
+            if (closureList[i].attributes.closureStatus === 'ACTIVE') {
                 if (closureInfo.endDate === "") {
                     closureInfo.endDate = closureList[i].attributes.endDate;
                 } else if (closureInfo.endDate > closureList[i].attributes.endDate) {
